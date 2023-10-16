@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofEvents.h"
-#include "ofxXmlSettings.h"
 
 class draggableVertex{
 	public:
@@ -25,9 +24,9 @@ class ofxBezierEditor{
 		ofPolyline polyLineFromPoints;
 		void createPolyLineFromPoints(bool closed);
 
-        string xmlFilename;
-		void loadXmlPoints(string filename);
-		void saveXmlPoints(string filename);
+        string jsonFileName;
+		void loadPoints(string filename);
+		void savePoints(string filename);
 
 		int getCurrentPointToMove(){ return currentPointToMove; };
 		void setCurrentPointToMove(int p){ currentPointToMove = p; };
@@ -82,12 +81,15 @@ class ofxBezierEditor{
 		ofPoint getCenter(){ return center; };
 
 		void setReactToMouseAndKeyEvents(bool b);
+        void registerToEvents();
+        void unregisterFromEvents();
+
 
 	private:
         int currentPointToMove;
 		int lastVertexSelected;
 
-		ofxXmlSettings XMLbezier;
+		ofJson JSONBezier;
 
 		int radiusVertex;
 		int radiusControlPoints;
