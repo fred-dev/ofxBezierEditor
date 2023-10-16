@@ -23,7 +23,7 @@ class ofxBezierEditor{
 		vector <draggableVertex> controlPoint1;
 		vector <draggableVertex> controlPoint2;
 		ofPolyline polyLineFromPoints;
-		void createPolyLineFromPoints();
+		void createPolyLineFromPoints(bool closed);
 
         string xmlFilename;
 		void loadXmlPoints(string filename);
@@ -42,8 +42,12 @@ class ofxBezierEditor{
         virtual void mouseDragged(ofMouseEventArgs &args);
         virtual void mousePressed(ofMouseEventArgs &args);
         virtual void mouseReleased(ofMouseEventArgs &args);
+        virtual void mouseScrolled(ofMouseEventArgs &args);
+        virtual void mouseEntered(ofMouseEventArgs &args);
+        virtual void mouseExited(ofMouseEventArgs &args);
         virtual void keyPressed(ofKeyEventArgs &args);
         virtual void keyReleased(ofKeyEventArgs &args);
+    
 
         int getRadiusVertex(){ return radiusVertex; };
 		void setRadiusVertex(int r){ radiusVertex = r; };

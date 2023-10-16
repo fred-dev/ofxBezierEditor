@@ -71,7 +71,7 @@ void ofxBezierEditor::setReactToMouseAndKeyEvents(bool b){
 //--------------------------------------------------------------
 void ofxBezierEditor::loadXmlPoints(string filename){
     xmlFilename = filename;
-    XMLbezier.loadFile(xmlFilename);
+    XMLbezier.load(xmlFilename);
     curveVertices.clear();
     controlPoint1.clear();
     controlPoint2.clear();
@@ -163,7 +163,7 @@ void ofxBezierEditor::saveXmlPoints(string filename){
 		XMLbezier.popTag();
     }
 
-    XMLbezier.saveFile(filename);
+    XMLbezier.save(filename);
 
 }
 
@@ -245,12 +245,12 @@ void ofxBezierEditor::drawHelp(){
         ofNoFill();
         ofSetColor(0,0,0,40);
         for (int i = 0; i < curveVertices.size(); i++){
-            ofLine(curveVertices.at(i).x, curveVertices.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y);
+            ofDrawLine(curveVertices.at(i).x, curveVertices.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y);
         }
         for (int i = 1; i < curveVertices.size(); i++){
-            ofLine(curveVertices.at(i-1).x, curveVertices.at(i-1).y, controlPoint1.at(i).x, controlPoint1.at(i).y);
+            ofDrawLine(curveVertices.at(i-1).x, curveVertices.at(i-1).y, controlPoint1.at(i).x, controlPoint1.at(i).y);
         }
-        ofLine(curveVertices.at(curveVertices.size()-1).x, curveVertices.at(curveVertices.size()-1).y, controlPoint1.at(0).x, controlPoint1.at(0).y); // the last one
+        ofDrawLine(curveVertices.at(curveVertices.size()-1).x, curveVertices.at(curveVertices.size()-1).y, controlPoint1.at(0).x, controlPoint1.at(0).y); // the last one
 
 //        ofNoFill();
 //        ofSetColor(0,0,0,40);
@@ -269,13 +269,13 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(2,77,77,200);
                 ofFill();
             }
-            ofCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
+            ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
             if(curveVertices.at(i).bBeingSelected == true){
                 ofSetColor(2,77,77,200);
                 ofFill();
-                ofCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
+                ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
                 ofNoFill();
-                ofCircle(curveVertices.at(i).x, curveVertices.at(i).y, 2*radiusVertex);
+                ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, 2*radiusVertex);
             }
             ofSetColor(0,0,0,80);
             ofDrawBitmapString("v_" + ofToString(i), curveVertices.at(i).x+3, curveVertices.at(i).y+3);
@@ -292,7 +292,7 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(95,52,98,200);
                 ofFill();
             }
-            ofCircle(controlPoint1.at(i).x, controlPoint1.at(i).y, radiusControlPoints);
+            ofDrawCircle(controlPoint1.at(i).x, controlPoint1.at(i).y, radiusControlPoints);
             ofSetColor(100,53,68,80);
             ofDrawBitmapString("cp1_" + ofToString(i), controlPoint1.at(i).x+3, controlPoint1.at(i).y+3);
         }
@@ -308,7 +308,7 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(95,52,98,200);
                 ofFill();
             }
-            ofCircle(controlPoint2.at(i).x, controlPoint2.at(i).y, radiusControlPoints);
+            ofDrawCircle(controlPoint2.at(i).x, controlPoint2.at(i).y, radiusControlPoints);
             ofSetColor(100,53,68,80);
             ofDrawBitmapString("cp2_" + ofToString(i), controlPoint2.at(i).x+3, controlPoint2.at(i).y+3);
         }
@@ -318,19 +318,19 @@ void ofxBezierEditor::drawHelp(){
         ofNoFill();
         if(range == 0){
             ofSetColor(40,103,99);
-            ofCircle(curveVertices.at(mod).x, curveVertices.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(curveVertices.at(mod).x, curveVertices.at(mod).y, 2*radiusControlPoints);
             ofSetColor(40,103,99, 100);
             ofDrawBitmapString("fine tune with arrows", curveVertices.at(mod).x+3, curveVertices.at(mod).y+3);
         }
         else if(range == 1){
             ofSetColor(40,103,99);
-            ofCircle(controlPoint1.at(mod).x, controlPoint1.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(controlPoint1.at(mod).x, controlPoint1.at(mod).y, 2*radiusControlPoints);
             ofSetColor(40,103,99, 100);
             ofDrawBitmapString("fine tune with arrows", controlPoint1.at(mod).x+3, controlPoint1.at(mod).y+3);
         }
         else if(range == 2){
             ofSetColor(40,103,99);
-            ofCircle(controlPoint2.at(mod).x, controlPoint2.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(controlPoint2.at(mod).x, controlPoint2.at(mod).y, 2*radiusControlPoints);
             ofSetColor(40,103,99, 100);
             ofDrawBitmapString("fine tune with arrows", controlPoint2.at(mod).x+3, controlPoint2.at(mod).y+3);
         }
@@ -338,11 +338,11 @@ void ofxBezierEditor::drawHelp(){
         if(bshowBoundingBox){
             ofFill();
             ofSetColor(10,250,255,150);
-            ofRect(boundingBox);
+            ofDrawRectangle(boundingBox);
             ofNoFill();
             ofSetLineWidth(2);
             ofSetColor(10,250,255);
-            ofRect(boundingBox);
+            ofDrawRectangle(boundingBox);
         }
         ofPopMatrix();
 
@@ -583,7 +583,15 @@ void ofxBezierEditor::mouseReleased(ofMouseEventArgs &args){
         }
 	}
 }
-
+//--------------------------------------------------------------
+void ofxBezierEditor::mouseScrolled(ofMouseEventArgs &args){
+}
+//--------------------------------------------------------------
+void ofxBezierEditor::mouseEntered(ofMouseEventArgs &args){
+}
+//--------------------------------------------------------------
+void ofxBezierEditor::mouseExited(ofMouseEventArgs &args){
+}
 //--------------------------------------------------------------
 void ofxBezierEditor::keyPressed(ofKeyEventArgs &args){
     if(args.key == 'e'){
@@ -597,7 +605,7 @@ void ofxBezierEditor::keyPressed(ofKeyEventArgs &args){
             loadXmlPoints(xmlFilename);
         }
         else if(args.key == 'p'){
-            createPolyLineFromPoints();
+            createPolyLineFromPoints(false);
         }
         else if(args.key == 'f'){
             bfillBezier = !bfillBezier;
@@ -730,7 +738,7 @@ void ofxBezierEditor::calculateCenter(){
 }
 
 //--------------------------------------------------------------
-void ofxBezierEditor::createPolyLineFromPoints(){
+void ofxBezierEditor::createPolyLineFromPoints(bool closed){
     if(curveVertices.size() > 0){
         for (int i = 0; i < curveVertices.size(); i++){
            if (i == 0){
@@ -740,7 +748,10 @@ void ofxBezierEditor::createPolyLineFromPoints(){
                 polyLineFromPoints.bezierTo(controlPoint1.at(i).x, controlPoint1.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y, curveVertices.at(i).x, curveVertices.at(i).y);
             }
         }
-        polyLineFromPoints.bezierTo(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
-        polyLineFromPoints.setClosed(true);
+        if(closed){
+            polyLineFromPoints.bezierTo(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
+            polyLineFromPoints.setClosed(true);
+        }
+        
     }
 }

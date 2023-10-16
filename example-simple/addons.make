@@ -1,2 +1,2 @@
-ofxXmlSettings
 ofxBezierEditor
+ofxXmlSettings
