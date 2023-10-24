@@ -3,14 +3,17 @@
 #include "ofMain.h"
 #include "ofEvents.h"
 
+#define GEO_LINE
+
+
 
 class draggableVertex {
 public:
-    float x;
-    float y;
-    bool bBeingDragged;
-    bool bOver;
-    bool bBeingSelected;
+    glm::vec2 pos = glm::vec2(0,0);
+    bool bBeingDragged = false;
+    bool bOver = false;
+    bool bBeingSelected = false;
+    
 };
 
 class ofxBezierEditor {
@@ -18,8 +21,14 @@ class ofxBezierEditor {
 public:
     // Constructors and Destructor
     ~ofxBezierEditor();
+
     ofxBezierEditor();
 
+#ifdef GEO_LINE
+    vector<draggableVertex> curveVerticesGeo;
+    vector<draggableVertex> controlPoint1Geo;
+    vector<draggableVertex> controlPoint2Geo;
+#endif
     // Vertex and Control Point Containers
     vector<draggableVertex> curveVertices;
     vector<draggableVertex> controlPoint1;
@@ -107,7 +116,12 @@ public:
     void setReactToMouseAndKeyEvents(bool b);
     void registerToEvents();
     void unregisterFromEvents();
-
+    
+#ifdef GEO_LINE
+    void updatePixelCoordsFromGeo();
+    void updateGeoCoordsFromPixel();
+    void updateAllFromGeo();
+#endif
 private:
     // Private Variables
     int currentPointToMove;
@@ -165,5 +179,6 @@ private:
     void generateTubeMeshFromPolyline();
     int tubeResolution = 10;
     float tubeRadius = 10.0;
+
 };
 

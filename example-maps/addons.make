@@ -1,0 +1,13 @@
+ofxBezierEditor
+ofxPoco
+ofxIO
+ofxSQLiteCpp
+ofxTaskQueue
+ofxCache
+ofxGeo
+ofxSSLManager
+ofxMediaType
+ofxNetworkUtils
+ofxHTTP
+ofxSpatialHash
+ofxMaps

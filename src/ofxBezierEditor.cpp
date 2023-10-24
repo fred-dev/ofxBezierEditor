@@ -1,5 +1,47 @@
 #include "ofxBezierEditor.h"
 
+#ifdef GEO_LINE
+#include "ofApp.h" // Include the header file that defines the ofApp class
+#endif
+
+
+ofxBezierEditor::ofxBezierEditor(){
+    
+    setRadiusVertex(8);
+    setRadiusControlPoints(6);
+    
+    currentPointToMove = 0;
+    lastVertexSelected = 0;
+    
+    draggableVertex vtx;
+    curveVertices.assign(0, vtx);
+    controlPoint1.assign(0, vtx);
+    controlPoint2.assign(0, vtx);
+    
+#ifdef GEO_LINE
+    curveVerticesGeo.assign(0, vtx);
+    controlPoint1Geo.assign(0, vtx);
+    controlPoint2Geo.assign(0, vtx);
+#endif
+    
+    bfillBezier = true;
+    colorFill = ofColor(188,4,62, 100);
+    colorStroke = ofColor(2,189,190, 100);
+    
+    boundingBox.set(0,0,0,0);
+    bshowBoundingBox = false;
+    center.set(0,0);
+    
+    beditBezier = false;
+    
+    
+    jsonFileName = "ofxBezierInfo.json";
+    
+    setReactToMouseAndKeyEvents(true);
+    polyLineFromPoints.setClosed(false);
+}
+
+
 //--------------------------------------------------------------
 void ofxBezierEditor::drawWithNormals(const ofPolyline& polyline) {
     
@@ -25,34 +67,7 @@ ofxBezierEditor::~ofxBezierEditor(){
     setReactToMouseAndKeyEvents(false);
 }
 
-ofxBezierEditor::ofxBezierEditor(){
-    setRadiusVertex(8);
-    setRadiusControlPoints(6);
-    
-    currentPointToMove = 0;
-    lastVertexSelected = 0;
-    
-    draggableVertex vtx;
-    curveVertices.assign(0, vtx);
-    controlPoint1.assign(0, vtx);
-    controlPoint2.assign(0, vtx);
-    
-    bfillBezier = true;
-    colorFill = ofColor(188,4,62, 100);
-    colorStroke = ofColor(2,189,190, 100);
-    
-    boundingBox.set(0,0,0,0);
-    bshowBoundingBox = false;
-    center.set(0,0);
-    
-    beditBezier = false;
-    
-    
-    jsonFileName = "ofxBezierInfo.json";
-    
-    setReactToMouseAndKeyEvents(true);
-    polyLineFromPoints.setClosed(false);
-}
+
 
 //--------------------------------------------------------------
 void ofxBezierEditor::setReactToMouseAndKeyEvents(bool b){
@@ -76,6 +91,7 @@ void ofxBezierEditor::unregisterFromEvents(){
 }
 //--------------------------------------------------------------
 void ofxBezierEditor::loadPoints(string filename){
+    ofLogVerbose("ofxBezierEditor") << "loadPoints: " << filename;
     jsonFileName = filename;
     
     ofFile jsonFile(jsonFileName);
@@ -83,14 +99,23 @@ void ofxBezierEditor::loadPoints(string filename){
         jsonFile >> JSONBezier;
         // Read data from JSON
         bUseRibbonMesh = JSONBezier["bezier"]["useRibbonMesh"].get<bool>();
+        ofLogVerbose("ofxBezierEditor") << "bUseRibbonMesh: " << bUseRibbonMesh;
         ribbonWidth = JSONBezier["bezier"]["ribbonWidth"].get<float>();
+        ofLogVerbose("ofxBezierEditor") << "ribbonWidth: " << ribbonWidth;
         meshPrecisionMultiplier = JSONBezier["bezier"]["meshPrecision"].get<int>();
-
+        ofLogVerbose("ofxBezierEditor") << "meshPrecisionMultiplier: " << meshPrecisionMultiplier;
+        
         bUseTubeMesh = JSONBezier["bezier"]["useTubeMesh"].get<bool>();
+        ofLogVerbose("ofxBezierEditor") << "bUseTubeMesh: " << bUseTubeMesh;
         tubeRadius = JSONBezier["bezier"]["tubeRadius"].get<float>();
+        ofLogVerbose("ofxBezierEditor") << "tubeRadius: " << tubeRadius;
         tubeResolution = JSONBezier["bezier"]["tubeResolution"].get<int>();
+        ofLogVerbose("ofxBezierEditor") << "tubeResolution: " << tubeResolution;
+        
         
         bIsClosed = JSONBezier["bezier"]["closed"].get<bool>();
+        ofLogVerbose("ofxBezierEditor") << "bIsClosed: " << bIsClosed;
+
         polyLineFromPoints.setClosed(bIsClosed);
         bfillBezier = JSONBezier["bezier"]["fill"].get<bool>();
         colorFill.set(
@@ -108,12 +133,56 @@ void ofxBezierEditor::loadPoints(string filename){
                         );
         
         
+#ifdef GEO_LINE
         // Read vertices from JSON
+        curveVerticesGeo.clear();
+        for (const auto& vertexJson : JSONBezier["bezier"]["vertices"]) {
+            ofLogVerbose("ofxBezierEditor") << "Curve vertexJson: " << vertexJson;
+    
+            draggableVertex vtx;
+            vtx.pos.x = vertexJson["x"].get<double>();
+            vtx.pos.y = vertexJson["y"].get<double>();
+            vtx.bOver = false;
+            vtx.bBeingDragged = false;
+            vtx.bBeingSelected = false;
+            curveVerticesGeo.push_back(vtx);
+        }
+        ofLogVerbose("ofxBezierEditor") << "curveVerticesGeo.size(): " << curveVerticesGeo.size();
+        
+        // Read control points from JSON
+        controlPoint1Geo.clear();
+        for (const auto& cpJson : JSONBezier["bezier"]["cp1"]) {
+            ofLogVerbose("ofxBezierEditor") << "CP 1 vertexJson: " << cpJson;
+
+            draggableVertex cp;
+            cp.pos.x = cpJson["x"].get<double>();
+            cp.pos.y = cpJson["y"].get<double>();
+            cp.bOver = false;
+            cp.bBeingDragged = false;
+            controlPoint1Geo.push_back(cp);
+        }
+        ofLogVerbose("ofxBezierEditor") << "controlPoint1Geo.size(): " << controlPoint1Geo.size();
+
+        controlPoint2Geo.clear();
+        for (const auto& cpJson : JSONBezier["bezier"]["cp2"]) {
+            ofLogVerbose("ofxBezierEditor") << "CP 2 vertexJson: " << cpJson;
+
+            draggableVertex cp;
+            cp.pos.x = cpJson["x"].get<double>();
+            cp.pos.y = cpJson["y"].get<double>();
+            cp.bOver = false;
+            cp.bBeingDragged = false;
+            controlPoint2Geo.push_back(cp);
+        }
+        ofLogVerbose("ofxBezierEditor") << "controlPoint2Geo.size(): " << controlPoint2Geo.size();
+
+        updatePixelCoordsFromGeo();
+#else
         curveVertices.clear();
         for (const auto& vertexJson : JSONBezier["bezier"]["vertices"]) {
             draggableVertex vtx;
-            vtx.x = vertexJson["x"].get<float>();
-            vtx.y = vertexJson["y"].get<float>();
+            vtx.pos.x = vertexJson["x"].get<float>();
+            vtx.pos.y = vertexJson["y"].get<float>();
             vtx.bOver = false;
             vtx.bBeingDragged = false;
             vtx.bBeingSelected = false;
@@ -124,8 +193,8 @@ void ofxBezierEditor::loadPoints(string filename){
         controlPoint1.clear();
         for (const auto& cpJson : JSONBezier["bezier"]["cp1"]) {
             draggableVertex cp;
-            cp.x = cpJson["x"].get<float>();
-            cp.y = cpJson["y"].get<float>();
+            cp.pos.x = cpJson["x"].get<float>();
+            cp.pos.y = cpJson["y"].get<float>();
             cp.bOver = false;
             cp.bBeingDragged = false;
             controlPoint1.push_back(cp);
@@ -134,12 +203,14 @@ void ofxBezierEditor::loadPoints(string filename){
         controlPoint2.clear();
         for (const auto& cpJson : JSONBezier["bezier"]["cp2"]) {
             draggableVertex cp;
-            cp.x = cpJson["x"].get<float>();
-            cp.y = cpJson["y"].get<float>();
+            cp.pos.x = cpJson["x"].get<float>();
+            cp.pos.y = cpJson["y"].get<float>();
             cp.bOver = false;
             cp.bBeingDragged = false;
             controlPoint2.push_back(cp);
         }
+#endif
+        
         
     } else {
         // Handle the case where the JSON file doesn't exist.
@@ -158,11 +229,11 @@ void ofxBezierEditor::savePoints(string filename){
     JSONBezier["bezier"]["useRibbonMesh"] = bUseRibbonMesh;
     JSONBezier["bezier"]["meshPrecision"] =  meshPrecisionMultiplier;
     JSONBezier["bezier"]["ribbonWidth"] = ribbonWidth;
-
+    
     JSONBezier["bezier"]["useTubeMesh"] = bUseTubeMesh;
     JSONBezier["bezier"]["tubeRadius"] = tubeRadius;
     JSONBezier["bezier"]["tubeResolution"] = tubeResolution;
-
+    
     JSONBezier["bezier"]["colorFill"]["r"] = colorFill.r;
     JSONBezier["bezier"]["colorFill"]["g"] = colorFill.g;
     JSONBezier["bezier"]["colorFill"]["b"] = colorFill.b;
@@ -174,19 +245,19 @@ void ofxBezierEditor::savePoints(string filename){
     JSONBezier["bezier"]["colorStroke"]["a"] = colorStroke.a;
     
     
-    for (int i = 0; i < curveVertices.size(); i++) {
-        JSONBezier["bezier"]["vertices"][i]["x"] = curveVertices.at(i).x ;
-        JSONBezier["bezier"]["vertices"][i]["y"] = curveVertices.at(i).y ;
+    for (int i = 0; i < curveVerticesGeo.size(); i++) {
+        JSONBezier["bezier"]["vertices"][i]["x"] = curveVerticesGeo.at(i).pos.x ;
+        JSONBezier["bezier"]["vertices"][i]["y"] = curveVerticesGeo.at(i).pos.y ;
     }
     
-    for (int i = 0; i < controlPoint1.size(); i++) {
-        JSONBezier["bezier"]["cp1"][i]["x"] = controlPoint1.at(i).x ;
-        JSONBezier["bezier"]["cp1"][i]["y"] = controlPoint1.at(i).y ;
+    for (int i = 0; i < controlPoint1Geo.size(); i++) {
+        JSONBezier["bezier"]["cp1"][i]["x"] = controlPoint1Geo.at(i).pos.x ;
+        JSONBezier["bezier"]["cp1"][i]["y"] = controlPoint1Geo.at(i).pos.y ;
     }
     
-    for (int i = 0; i < controlPoint2.size(); i++) {
-        JSONBezier["bezier"]["cp2"][i]["x"] = controlPoint2.at(i).x ;
-        JSONBezier["bezier"]["cp2"][i]["y"] = controlPoint2.at(i).y ;
+    for (int i = 0; i < controlPoint2Geo.size(); i++) {
+        JSONBezier["bezier"]["cp2"][i]["x"] = controlPoint2Geo.at(i).pos.x ;
+        JSONBezier["bezier"]["cp2"][i]["y"] = controlPoint2Geo.at(i).pos.y ;
     }
     
     // Save JSON to a file
@@ -205,14 +276,14 @@ void ofxBezierEditor::draw(){
             ofBeginShape();
             for (int i = 0; i < curveVertices.size(); i++){
                 if (i == 0){
-                    ofVertex(curveVertices.at(0).x, curveVertices.at(0).y); // we need to duplicate 0 for the curve to start at point 0
+                    ofVertex(curveVertices.at(0).pos.x, curveVertices.at(0).pos.y); // we need to duplicate 0 for the curve to start at point 0
                 }
                 else {
-                    ofBezierVertex(controlPoint1.at(i).x, controlPoint1.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y, curveVertices.at(i).x, curveVertices.at(i).y);
+                    ofBezierVertex(controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y, controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y, curveVertices.at(i).pos.x, curveVertices.at(i).pos.y);
                 }
             }
             
-            ofBezierVertex(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
+            ofBezierVertex(controlPoint1.at(0).pos.x, controlPoint1.at(0).pos.y, controlPoint2.at(0).pos.x, controlPoint2.at(0).pos.y, curveVertices.at(0).pos.x, curveVertices.at(0).pos.y);
             
             ofEndShape(bIsClosed);
         }
@@ -223,15 +294,15 @@ void ofxBezierEditor::draw(){
         ofBeginShape();
         for (int i = 0; i < curveVertices.size(); i++){
             if (i == 0){
-                ofVertex(curveVertices.at(0).x, curveVertices.at(0).y); // we need to duplicate 0 for the curve to start at point 0
+                ofVertex(curveVertices.at(0).pos.x, curveVertices.at(0).pos.y); // we need to duplicate 0 for the curve to start at point 0
             }
             else {
-                ofBezierVertex(controlPoint1.at(i).x, controlPoint1.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y, curveVertices.at(i).x, curveVertices.at(i).y);
+                ofBezierVertex(controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y, controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y, curveVertices.at(i).pos.x, curveVertices.at(i).pos.y);
             }
         }
         if(bIsClosed){
             
-            ofBezierVertex(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
+            ofBezierVertex(controlPoint1.at(0).pos.x, controlPoint1.at(0).pos.y, controlPoint2.at(0).pos.x, controlPoint2.at(0).pos.y, curveVertices.at(0).pos.x, curveVertices.at(0).pos.y);
         }
         ofEndShape(bIsClosed);
         ofPopMatrix();
@@ -249,14 +320,14 @@ void ofxBezierEditor::drawOutline(){
         ofBeginShape();
         for (int i = 0; i < curveVertices.size(); i++){
             if (i == 0){
-                ofVertex(curveVertices.at(0).x, curveVertices.at(0).y); // we need to duplicate 0 for the curve to start at point 0
+                ofVertex(curveVertices.at(0).pos.x, curveVertices.at(0).pos.y); // we need to duplicate 0 for the curve to start at point 0
             }
             else {
-                ofBezierVertex(controlPoint1.at(i).x, controlPoint1.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y, curveVertices.at(i).x, curveVertices.at(i).y);
+                ofBezierVertex(controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y, controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y, curveVertices.at(i).pos.x, curveVertices.at(i).pos.y);
             }
         }
         if(bIsClosed){
-            ofBezierVertex(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
+            ofBezierVertex(controlPoint1.at(0).pos.x, controlPoint1.at(0).pos.y, controlPoint2.at(0).pos.x, controlPoint2.at(0).pos.y, curveVertices.at(0).pos.x, curveVertices.at(0).pos.y);
         }
         ofEndShape(bIsClosed);
         ofPopMatrix();
@@ -276,12 +347,12 @@ void ofxBezierEditor::drawHelp(){
         ofNoFill();
         ofSetColor(0,0,0,40);
         for (int i = 0; i < curveVertices.size(); i++){
-            ofDrawLine(curveVertices.at(i).x, curveVertices.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y);
+            ofDrawLine(curveVertices.at(i).pos.x, curveVertices.at(i).pos.y, controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y);
         }
         for (int i = 1; i < curveVertices.size(); i++){
-            ofDrawLine(curveVertices.at(i-1).x, curveVertices.at(i-1).y, controlPoint1.at(i).x, controlPoint1.at(i).y);
+            ofDrawLine(curveVertices.at(i-1).pos.x, curveVertices.at(i-1).pos.y, controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y);
         }
-        ofDrawLine(curveVertices.at(curveVertices.size()-1).x, curveVertices.at(curveVertices.size()-1).y, controlPoint1.at(0).x, controlPoint1.at(0).y); // =
+        ofDrawLine(curveVertices.at(curveVertices.size()-1).pos.x, curveVertices.at(curveVertices.size()-1).pos.y, controlPoint1.at(0).pos.x, controlPoint1.at(0).pos.y); // =
         
         
         for (int i = 0; i < curveVertices.size(); i++){
@@ -295,16 +366,16 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(vertexDraggedColour);
                 ofFill();
             }
-            ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
+            ofDrawCircle(curveVertices.at(i).pos.x, curveVertices.at(i).pos.y, radiusVertex);
             if(curveVertices.at(i).bBeingSelected == true){
                 ofSetColor(vertexSelectedColour);
                 ofFill();
-                ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, radiusVertex);
+                ofDrawCircle(curveVertices.at(i).pos.x, curveVertices.at(i).pos.y, radiusVertex);
                 ofNoFill();
-                ofDrawCircle(curveVertices.at(i).x, curveVertices.at(i).y, 2*radiusVertex);
+                ofDrawCircle(curveVertices.at(i).pos.x, curveVertices.at(i).pos.y, 2*radiusVertex);
             }
             ofSetColor(vertexLabelColour);
-            ofDrawBitmapString("v_" + ofToString(i), curveVertices.at(i).x+3, curveVertices.at(i).y+3);
+            ofDrawBitmapString("v_" + ofToString(i), curveVertices.at(i).pos.x+3, curveVertices.at(i).pos.y+3);
         }
         
         
@@ -319,9 +390,9 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(ctrPtDraggedColour);
                 ofFill();
             }
-            ofDrawCircle(controlPoint1.at(i).x, controlPoint1.at(i).y, radiusControlPoints);
+            ofDrawCircle(controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y, radiusControlPoints);
             ofSetColor(ctrPtLabelColour);
-            ofDrawBitmapString("cp1_" + ofToString(i), controlPoint1.at(i).x+3, controlPoint1.at(i).y+3);
+            ofDrawBitmapString("cp1_" + ofToString(i), controlPoint1.at(i).pos.x+3, controlPoint1.at(i).pos.y+3);
         }
         
         for (int i = 0; i < controlPoint2.size(); i++){
@@ -335,9 +406,9 @@ void ofxBezierEditor::drawHelp(){
                 ofSetColor(ctrPtDraggedColour);
                 ofFill();
             }
-            ofDrawCircle(controlPoint2.at(i).x, controlPoint2.at(i).y, radiusControlPoints);
+            ofDrawCircle(controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y, radiusControlPoints);
             ofSetColor(ctrPtLabelColour);
-            ofDrawBitmapString("cp2_" + ofToString(i), controlPoint2.at(i).x+3, controlPoint2.at(i).y+3);
+            ofDrawBitmapString("cp2_" + ofToString(i), controlPoint2.at(i).pos.x+3, controlPoint2.at(i).pos.y+3);
         }
         
         int range = currentPointToMove / curveVertices.size();
@@ -345,21 +416,21 @@ void ofxBezierEditor::drawHelp(){
         ofNoFill();
         if(range == 0){
             ofSetColor(255,255,0);
-            ofDrawCircle(curveVertices.at(mod).x, curveVertices.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(curveVertices.at(mod).pos.x, curveVertices.at(mod).pos.y, 2*radiusControlPoints);
             ofSetColor(255,255,0);
-            ofDrawBitmapString("fine tune with arrows", curveVertices.at(mod).x+3, curveVertices.at(mod).y+3);
+            ofDrawBitmapString("fine tune with arrows", curveVertices.at(mod).pos.x+3, curveVertices.at(mod).pos.y+3);
         }
         else if(range == 1){
             ofSetColor(255,0,255);
-            ofDrawCircle(controlPoint1.at(mod).x, controlPoint1.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(controlPoint1.at(mod).pos.x, controlPoint1.at(mod).pos.y, 2*radiusControlPoints);
             ofSetColor(255,0,255);
-            ofDrawBitmapString("fine tune with arrows", controlPoint1.at(mod).x+3, controlPoint1.at(mod).y+3);
+            ofDrawBitmapString("fine tune with arrows", controlPoint1.at(mod).pos.x+3, controlPoint1.at(mod).pos.y+3);
         }
         else if(range == 2){
             ofSetColor(255,0,0);
-            ofDrawCircle(controlPoint2.at(mod).x, controlPoint2.at(mod).y, 2*radiusControlPoints);
+            ofDrawCircle(controlPoint2.at(mod).pos.x, controlPoint2.at(mod).pos.y, 2*radiusControlPoints);
             ofSetColor(255,0,0);
-            ofDrawBitmapString("fine tune with arrows", controlPoint2.at(mod).x+3, controlPoint2.at(mod).y+3);
+            ofDrawBitmapString("fine tune with arrows", controlPoint2.at(mod).pos.x+3, controlPoint2.at(mod).pos.y+3);
         }
         
         if(bshowBoundingBox){
@@ -399,8 +470,8 @@ void ofxBezierEditor::drawHelp(){
 void ofxBezierEditor::mouseMoved(ofMouseEventArgs &args){
     if(beditBezier == true){
         for (int i = 0; i < curveVertices.size(); i++){
-            float diffx = args.x - curveVertices.at(i).x;
-            float diffy = args.y - curveVertices.at(i).y;
+            float diffx = args.x - curveVertices.at(i).pos.x;
+            float diffy = args.y - curveVertices.at(i).pos.y;
             float dist = sqrt(diffx*diffx + diffy*diffy);
             if (dist < radiusVertex){
                 curveVertices.at(i).bOver = true;
@@ -410,8 +481,8 @@ void ofxBezierEditor::mouseMoved(ofMouseEventArgs &args){
         }
         
         for (int i = 0; i < controlPoint1.size(); i++){
-            float diffx = args.x - controlPoint1.at(i).x;
-            float diffy = args.y - controlPoint1.at(i).y;
+            float diffx = args.x - controlPoint1.at(i).pos.x;
+            float diffy = args.y - controlPoint1.at(i).pos.y;
             float dist = sqrt(diffx*diffx + diffy*diffy);
             if (dist < radiusControlPoints){
                 controlPoint1.at(i).bOver = true;
@@ -421,8 +492,8 @@ void ofxBezierEditor::mouseMoved(ofMouseEventArgs &args){
         }
         
         for (int i = 0; i < controlPoint2.size(); i++){
-            float diffx = args.x - controlPoint2.at(i).x;
-            float diffy = args.y - controlPoint2.at(i).y;
+            float diffx = args.x - controlPoint2.at(i).pos.x;
+            float diffy = args.y - controlPoint2.at(i).pos.y;
             float dist = sqrt(diffx*diffx + diffy*diffy);
             if (dist < radiusControlPoints){
                 controlPoint2.at(i).bOver = true;
@@ -441,18 +512,18 @@ void ofxBezierEditor::mouseDragged(ofMouseEventArgs &args){
             int deltaY = args.y - mouseY;
             
             for (int i = 0; i < curveVertices.size(); i++) {
-                curveVertices.at(i).x += deltaX;
-                curveVertices.at(i).y += deltaY;
+                curveVertices.at(i).pos.x += deltaX;
+                curveVertices.at(i).pos.y += deltaY;
             }
             
             for (int i = 0; i < controlPoint1.size(); i++) {
-                controlPoint1.at(i).x += deltaX;
-                controlPoint1.at(i).y += deltaY;
+                controlPoint1.at(i).pos.x += deltaX;
+                controlPoint1.at(i).pos.y += deltaY;
             }
             
             for (int i = 0; i < controlPoint2.size(); i++) {
-                controlPoint2.at(i).x += deltaX;
-                controlPoint2.at(i).y += deltaY;
+                controlPoint2.at(i).pos.x += deltaX;
+                controlPoint2.at(i).pos.y += deltaY;
             }
             
             
@@ -463,22 +534,22 @@ void ofxBezierEditor::mouseDragged(ofMouseEventArgs &args){
         
         for (int i = 0; i < curveVertices.size(); i++){
             if (curveVertices.at(i).bBeingDragged == true){
-                curveVertices.at(i).x = args.x ;
-                curveVertices.at(i).y = args.y ;
+                curveVertices.at(i).pos.x = args.x ;
+                curveVertices.at(i).pos.y = args.y ;
             }
         }
         
         for (int i = 0; i < controlPoint1.size(); i++){
             if (controlPoint1.at(i).bBeingDragged == true){
-                controlPoint1.at(i).x = args.x ;
-                controlPoint1.at(i).y = args.y ;
+                controlPoint1.at(i).pos.x = args.x ;
+                controlPoint1.at(i).pos.y = args.y ;
             }
         }
         
         for (int i = 0; i < controlPoint2.size(); i++){
             if (controlPoint2.at(i).bBeingDragged == true){
-                controlPoint2.at(i).x = args.x ;
-                controlPoint2.at(i).y = args.y ;
+                controlPoint2.at(i).pos.x = args.x ;
+                controlPoint2.at(i).pos.y = args.y ;
             }
         }
         updateAllFromVertices();
@@ -498,8 +569,8 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                 bool bAnyVertexDragged = false;
                 // MOVE vertex
                 for (int i = 0; i < curveVertices.size(); i++){
-                    float diffx = args.x  - curveVertices.at(i).x;
-                    float diffy = args.y  - curveVertices.at(i).y;
+                    float diffx = args.x  - curveVertices.at(i).pos.x;
+                    float diffy = args.y  - curveVertices.at(i).pos.y;
                     float dist = sqrt(diffx*diffx + diffy*diffy);
                     if (dist < radiusVertex){
                         curveVertices.at(i).bBeingDragged = true;
@@ -510,8 +581,8 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                 }
                 
                 for (int i = 0; i < controlPoint1.size(); i++){
-                    float diffx = args.x  - controlPoint1.at(i).x;
-                    float diffy = args.y  - controlPoint1.at(i).y;
+                    float diffx = args.x  - controlPoint1.at(i).pos.x;
+                    float diffy = args.y  - controlPoint1.at(i).pos.y;
                     float dist = sqrt(diffx*diffx + diffy*diffy);
                     if (dist < radiusControlPoints){
                         controlPoint1.at(i).bBeingDragged = true;
@@ -522,8 +593,8 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                 }
                 
                 for (int i = 0; i < controlPoint2.size(); i++){
-                    float diffx = args.x  - controlPoint2.at(i).x;
-                    float diffy = args.y  - controlPoint2.at(i).y;
+                    float diffx = args.x  - controlPoint2.at(i).pos.x;
+                    float diffy = args.y  - controlPoint2.at(i).pos.y;
                     float dist = sqrt(diffx*diffx + diffy*diffy);
                     if (dist < radiusControlPoints){
                         controlPoint2.at(i).bBeingDragged = true;
@@ -536,8 +607,8 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                 // ADD vertex to the end
                 if(bAnyVertexDragged == false){
                     draggableVertex vtx;
-                    vtx.x = args.x ;
-                    vtx.y = args.y ;
+                    vtx.pos.x = args.x ;
+                    vtx.pos.y = args.y ;
                     vtx.bOver 			= true;
                     vtx.bBeingDragged 	= false;
                     vtx.bBeingSelected  = false;
@@ -545,14 +616,14 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                     
                     draggableVertex cp;
                     int nEnd = curveVertices.size()-1;
-                    cp.x = ofLerp(curveVertices.at(0).x , curveVertices.at(nEnd).x , 0.66);
-                    cp.y = ofLerp(curveVertices.at(0).y , curveVertices.at(nEnd).y , 0.66);
+                    cp.pos.x = ofLerp(curveVertices.at(0).pos.x , curveVertices.at(nEnd).pos.x , 0.66);
+                    cp.pos.y = ofLerp(curveVertices.at(0).pos.y , curveVertices.at(nEnd).pos.y , 0.66);
                     cp.bOver 			= false;
                     cp.bBeingDragged 	= false;
                     cp.bBeingSelected 	= false;
                     controlPoint1.push_back(cp);
-                    cp.x = ofLerp(curveVertices.at(0).x , curveVertices.at(nEnd).x , 0.33);
-                    cp.y = ofLerp(curveVertices.at(0).y , curveVertices.at(nEnd).y , 0.33);
+                    cp.pos.x = ofLerp(curveVertices.at(0).pos.x , curveVertices.at(nEnd).pos.x , 0.33);
+                    cp.pos.y = ofLerp(curveVertices.at(0).pos.y , curveVertices.at(nEnd).pos.y , 0.33);
                     controlPoint2.push_back(cp);
                     
                     updateAllFromVertices();
@@ -564,8 +635,8 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
             // SELECT several vertex
             bool bAnyVertexSelected = false;
             for (int i = 0; i < curveVertices.size(); i++){
-                float diffx = args.x  - curveVertices.at(i).x;
-                float diffy = args.y  - curveVertices.at(i).y;
+                float diffx = args.x  - curveVertices.at(i).pos.x;
+                float diffy = args.y  - curveVertices.at(i).pos.y;
                 float dist = sqrt(diffx*diffx + diffy*diffy);
                 if (dist < radiusVertex){
                     curveVertices.at(i).bBeingSelected = !curveVertices.at(i).bBeingSelected;
@@ -585,22 +656,22 @@ void ofxBezierEditor::mousePressed(ofMouseEventArgs &args){
                 // ADD vertex between two points
                 if(numVertexSelected >= 2){
                     draggableVertex vtx;
-                    vtx.x = args.x ;
-                    vtx.y = args.y ;
+                    vtx.pos.x = args.x ;
+                    vtx.pos.y = args.y ;
                     vtx.bOver 			= true;
                     vtx.bBeingDragged 	= false;
                     vtx.bBeingSelected 	= false;
                     curveVertices.insert(curveVertices.begin()+lastVertexSelected, vtx);
                     
                     draggableVertex cp;
-                    cp.x = ofLerp(curveVertices.at(lastVertexSelected-1).x , curveVertices.at(lastVertexSelected).x , 0.66);
-                    cp.y = ofLerp(curveVertices.at(lastVertexSelected-1).y , curveVertices.at(lastVertexSelected).y , 0.66);
+                    cp.pos.x = ofLerp(curveVertices.at(lastVertexSelected-1).pos.x , curveVertices.at(lastVertexSelected).pos.x , 0.66);
+                    cp.pos.y = ofLerp(curveVertices.at(lastVertexSelected-1).pos.y , curveVertices.at(lastVertexSelected).pos.y , 0.66);
                     cp.bOver 			= false;
                     cp.bBeingDragged 	= false;
                     cp.bBeingSelected 	= false;
                     controlPoint1.insert(controlPoint1.begin()+lastVertexSelected,cp);
-                    cp.x = ofLerp(curveVertices.at(lastVertexSelected).x , curveVertices.at(lastVertexSelected).x , 0.33);
-                    cp.y = ofLerp(curveVertices.at(lastVertexSelected-1).y , curveVertices.at(lastVertexSelected).y , 0.33);
+                    cp.pos.x = ofLerp(curveVertices.at(lastVertexSelected).pos.x , curveVertices.at(lastVertexSelected).pos.x , 0.33);
+                    cp.pos.y = ofLerp(curveVertices.at(lastVertexSelected-1).pos.y , curveVertices.at(lastVertexSelected).pos.y , 0.33);
                     controlPoint2.insert(controlPoint2.begin()+lastVertexSelected,cp);
                     
                     updateAllFromVertices();
@@ -673,52 +744,52 @@ void ofxBezierEditor::keyPressed(ofKeyEventArgs &args){
             int range = currentPointToMove / curveVertices.size();
             int mod = currentPointToMove % curveVertices.size();
             if(range == 0){
-                curveVertices.at(mod).y--;
+                curveVertices.at(mod).pos.y--;
             }
             else if(range == 1){
-                controlPoint1.at(mod).y--;
+                controlPoint1.at(mod).pos.y--;
             }
             else if(range == 2){
-                controlPoint2.at(mod).y--;
+                controlPoint2.at(mod).pos.y--;
             }
         }
         else if(args.key == OF_KEY_DOWN){
             int range = currentPointToMove / curveVertices.size();
             int mod = currentPointToMove % curveVertices.size();
             if(range == 0){
-                curveVertices.at(mod).y++;
+                curveVertices.at(mod).pos.y++;
             }
             else if(range == 1){
-                controlPoint1.at(mod).y++;
+                controlPoint1.at(mod).pos.y++;
             }
             else if(range == 2){
-                controlPoint2.at(mod).y++;
+                controlPoint2.at(mod).pos.y++;
             }
         }
         else if(args.key == OF_KEY_LEFT){
             int range = currentPointToMove / curveVertices.size();
             int mod = currentPointToMove % curveVertices.size();
             if(range == 0){
-                curveVertices.at(mod).x--;
+                curveVertices.at(mod).pos.x--;
             }
             else if(range == 1){
-                controlPoint1.at(mod).x--;
+                controlPoint1.at(mod).pos.x--;
             }
             else if(range == 2){
-                controlPoint2.at(mod).x--;
+                controlPoint2.at(mod).pos.x--;
             }
         }
         else if(args.key == OF_KEY_RIGHT){
             int range = currentPointToMove / curveVertices.size();
             int mod = currentPointToMove % curveVertices.size();
             if(range == 0){
-                curveVertices.at(mod).x++;
+                curveVertices.at(mod).pos.x++;
             }
             else if(range == 1){
-                controlPoint1.at(mod).x++;
+                controlPoint1.at(mod).pos.x++;
             }
             else if(range == 2){
-                controlPoint2.at(mod).x++;
+                controlPoint2.at(mod).pos.x++;
             }
         }
         if(args.key == OF_KEY_BACKSPACE){
@@ -762,14 +833,14 @@ void ofxBezierEditor::updatePolyline(){
         
         for (int i = 0; i < curveVertices.size(); i++){
             if (i == 0){
-                polyLineFromPoints.addVertex(curveVertices.at(0).x, curveVertices.at(0).y); // we need to duplicate 0 for the curve to start at point 0
+                polyLineFromPoints.addVertex(curveVertices.at(0).pos.x, curveVertices.at(0).pos.y); // we need to duplicate 0 for the curve to start at point 0
             }
             else{
-                polyLineFromPoints.bezierTo(controlPoint1.at(i).x, controlPoint1.at(i).y, controlPoint2.at(i).x, controlPoint2.at(i).y, curveVertices.at(i).x, curveVertices.at(i).y);
+                polyLineFromPoints.bezierTo(controlPoint1.at(i).pos.x, controlPoint1.at(i).pos.y, controlPoint2.at(i).pos.x, controlPoint2.at(i).pos.y, curveVertices.at(i).pos.x, curveVertices.at(i).pos.y);
             }
         }
         if(bIsClosed){
-            polyLineFromPoints.bezierTo(controlPoint1.at(0).x, controlPoint1.at(0).y, controlPoint2.at(0).x, controlPoint2.at(0).y, curveVertices.at(0).x, curveVertices.at(0).y);
+            polyLineFromPoints.bezierTo(controlPoint1.at(0).pos.x, controlPoint1.at(0).pos.y, controlPoint2.at(0).pos.x, controlPoint2.at(0).pos.y, curveVertices.at(0).pos.x, curveVertices.at(0).pos.y);
             polyLineFromPoints.setClosed(bIsClosed);
         }
         
@@ -833,6 +904,27 @@ void ofxBezierEditor::generateTriangleStripFromPolyline() {
 }
 
 void ofxBezierEditor::updateAllFromVertices(){
+#ifdef GEO_LINE
+    updateGeoCoordsFromPixel();
+#endif
+    updatePolyline();
+    
+    updateBoundingBox();
+    
+    calculateCenter();
+    
+    if(bUseRibbonMesh){
+        generateTriangleStripFromPolyline();
+    }
+    if(bUseTubeMesh){
+        generateTubeMeshFromPolyline();
+    }
+    
+}
+#ifdef GEO_LINE
+void ofxBezierEditor::updateAllFromGeo(){
+
+    
     updatePolyline();
     
     updateBoundingBox();
@@ -846,89 +938,90 @@ void ofxBezierEditor::updateAllFromVertices(){
         generateTubeMeshFromPolyline();
     }
 }
+#endif
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(){
     tubeMesh.clear();
     tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-        
+    
     float tubeLength = polyLineFromPoints.size();
-        float tubeCircumference = 2.0 * PI * tubeRadius;
+    float tubeCircumference = 2.0 * PI * tubeRadius;
+    
+    for (int i = 0; i < polyLineFromPoints.size(); i++) {
+        const ofVec3f &p0 = polyLineFromPoints.getVertices()[i];
+        const ofVec3f &n0 = polyLineFromPoints.getNormalAtIndex(i);
+        const ofVec3f &t0 = polyLineFromPoints.getTangentAtIndex(i);
+        float r0 = tubeRadius;
         
-        for (int i = 0; i < polyLineFromPoints.size(); i++) {
-            const ofVec3f &p0 = polyLineFromPoints.getVertices()[i];
-            const ofVec3f &n0 = polyLineFromPoints.getNormalAtIndex(i);
-            const ofVec3f &t0 = polyLineFromPoints.getTangentAtIndex(i);
-            float r0 = tubeRadius;
+        ofVec3f v0;
+        for (int j = 0; j < tubeResolution; j++) {
+            float p = j / static_cast<float>(tubeResolution);
+            float a = p * 360;
+            v0 = n0.rotated(a, t0);
             
-            ofVec3f v0;
-            for (int j = 0; j < tubeResolution; j++) {
-                float p = j / static_cast<float>(tubeResolution);
-                float a = p * 360;
-                v0 = n0.rotated(a, t0);
-                
-                // Calculate normalized texture coordinates
-                float u = a / 360.0f;                           // U-coordinate (around the tube)
-                float v = i / static_cast<float>(tubeLength);  // V-coordinate (along the tube)
-                
-                tubeMesh.addNormal(v0);
-                tubeMesh.addTexCoord(ofVec2f(u, v));
-                tubeMesh.addColor(colorStroke);
-
-                
-                v0 *= r0;
-                v0 += p0;
-                
-                tubeMesh.addVertex(v0);
-            }
+            // Calculate normalized texture coordinates
+            float u = a / 360.0f;                           // U-coordinate (around the tube)
+            float v = i / static_cast<float>(tubeLength);  // V-coordinate (along the tube)
+            
+            tubeMesh.addNormal(v0);
+            tubeMesh.addTexCoord(ofVec2f(u, v));
+            tubeMesh.addColor(colorStroke);
+            
+            
+            v0 *= r0;
+            v0 += p0;
+            
+            tubeMesh.addVertex(v0);
         }
-
-        //--------------------------------------------------------------------------
-        vector<glm::vec3> & verts = tubeMesh.getVertices();
-        int numOfVerts = verts.size();
-        bool bLeftToRight;
-        bool bRingEnd = false;
-        int i0, i1;
-        int k;
+    }
+    
+    //--------------------------------------------------------------------------
+    vector<glm::vec3> & verts = tubeMesh.getVertices();
+    int numOfVerts = verts.size();
+    bool bLeftToRight;
+    bool bRingEnd = false;
+    int i0, i1;
+    int k;
+    
+    int numOfTubeSections = polyLineFromPoints.size();
+    for(int i=0; i<numOfTubeSections; i++) {
         
-        int numOfTubeSections = polyLineFromPoints.size();
-        for(int i=0; i<numOfTubeSections; i++) {
-
-            bLeftToRight = (i % 2 == 0);
-            k = 0;
+        bLeftToRight = (i % 2 == 0);
+        k = 0;
+        
+        for(int j=0; j<tubeResolution+1; j++) {
             
-            for(int j=0; j<tubeResolution+1; j++) {
-                
-                i0 = (i + 0) * tubeResolution + k;
-                i1 = (i + 1) * tubeResolution + k;
-                
-                if(bLeftToRight == true) {
-                    k += 1;
-                    if(k > tubeResolution-1) {
-                        k -= tubeResolution;
-                    }
-                } else {
-                    k -= 1;
-                    if(k < 0) {
-                        k += tubeResolution;
-                    }
+            i0 = (i + 0) * tubeResolution + k;
+            i1 = (i + 1) * tubeResolution + k;
+            
+            if(bLeftToRight == true) {
+                k += 1;
+                if(k > tubeResolution-1) {
+                    k -= tubeResolution;
                 }
-
-                if(i0 > numOfVerts - 1) {
-                    i0 -= numOfVerts;
+            } else {
+                k -= 1;
+                if(k < 0) {
+                    k += tubeResolution;
                 }
-                if(i1 > numOfVerts - 1) {
-                    i1 -= numOfVerts;
-                }
-                
-                tubeMesh.addIndex(i0);
+            }
+            
+            if(i0 > numOfVerts - 1) {
+                i0 -= numOfVerts;
+            }
+            if(i1 > numOfVerts - 1) {
+                i1 -= numOfVerts;
+            }
+            
+            tubeMesh.addIndex(i0);
+            tubeMesh.addIndex(i1);
+            
+            bRingEnd = (j == tubeResolution);
+            if(bRingEnd == true) {
                 tubeMesh.addIndex(i1);
-                
-                bRingEnd = (j == tubeResolution);
-                if(bRingEnd == true) {
-                    tubeMesh.addIndex(i1);
-                }
             }
         }
+    }
 }
 
 void ofxBezierEditor::setColorFill(ofColor c){
@@ -967,3 +1060,82 @@ void ofxBezierEditor::setColorStrokeB(float c){
 void ofxBezierEditor::setColorStrokeA(float a){
     colorStroke.a = a;
 }
+#ifdef GEO_LINE
+void ofxBezierEditor::updatePixelCoordsFromGeo(){
+    
+    curveVertices.clear();
+    for(int i = 0; i < curveVerticesGeo.size(); i++){
+        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(curveVerticesGeo[i].pos);
+        if (tempPixVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempPixVtx;
+            curveVertices.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updatePixelCoordsFromGeo() - tempPixVtx is null";
+        }
+    }
+    
+    controlPoint1.clear();
+    for(int i = 0; i < controlPoint1Geo.size(); i++){
+        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(controlPoint1Geo[i].pos);
+        if (tempPixVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempPixVtx;
+            controlPoint1.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updatePixelCoordsFromGeo() - tempPixVtx is null";
+        }
+    }
+    
+    controlPoint2.clear();
+    for(int i = 0; i < controlPoint2Geo.size(); i++){
+        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(controlPoint2Geo[i].pos);
+        if (tempPixVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempPixVtx;
+            controlPoint2.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updatePixelCoordsFromGeo() - tempPixVtx is null";
+        }
+    }
+    updateAllFromGeo();
+    
+}
+
+void ofxBezierEditor::updateGeoCoordsFromPixel(){
+    curveVerticesGeo.clear();
+    for(int i = 0; i < curveVertices.size(); i++){
+        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(curveVertices[i].pos);
+        if (tempGeoVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempGeoVtx;
+            curveVerticesGeo.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updateGeoCoordsFromPixel() - tempGeoVtx is null";
+        }
+    }
+    
+    controlPoint1Geo.clear();
+    for(int i = 0; i < controlPoint1.size(); i++){
+        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(controlPoint1[i].pos);
+        if (tempGeoVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempGeoVtx;
+            controlPoint1Geo.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updateGeoCoordsFromPixel() - tempGeoVtx is null";        }
+    }
+    
+    controlPoint2Geo.clear();
+    for(int i = 0; i < controlPoint2.size(); i++){
+        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(controlPoint2[i].pos);
+        if (tempGeoVtx) {
+            draggableVertex tmpDVtx;
+            tmpDVtx.pos = *tempGeoVtx;
+            controlPoint2Geo.push_back(tmpDVtx);
+        } else {
+            ofLogVerbose()<<"ofxBezierEditor::updateGeoCoordsFromPixel() - tempGeoVtx is null";        }
+    }
+}
+
+#endif
