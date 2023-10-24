@@ -4,7 +4,7 @@ An easy bézier shapes editor tool for OpenFrameworks. Load, edit, save, and dra
 
 ![Example UI](screenrecording_bezier_editor.gif)
 
-This addon was originally forked from [acarreras/ofxBezierEditor](https://github.com/acarreras/ofxBezierEditor) and has been updated to work with later versions of OpenGL. It now supports drawing fat lines and creating tube meshes. The ofxUI dependency has been removed and replaced with ofxGui, the xml data format has been replaced with JSON.
+This addon was originally forked from [acarreras/ofxBezierEditor](https://github.com/acarreras/ofxBezierEditor) and has been updated to work with later versions of OpenGL. It now supports drawing fat lines and creating tube meshes tube mesh code courtesy of [julapy/ofxTubePrimitive](https://github.com/julapy/ofxTubePrimitive). The ofxUI dependency has been removed and replaced with ofxGui, the xml data format has been replaced with JSON.
 
 ## Usage
 
