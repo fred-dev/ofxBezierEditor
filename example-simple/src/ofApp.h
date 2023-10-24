@@ -3,6 +3,12 @@
 #include "ofMain.h"
 #include "ofxBezierEditor.h"
 
+enum OperationMode {
+    POLYLINE_MODE,
+    FAT_LINE_MODE,
+    TUBE_MESH_MODE,
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
@@ -22,5 +28,12 @@ class ofApp : public ofBaseApp{
 
 		ofxBezierEditor myBezier;
 		bool bdrawBezierInfo;
+    
+        ofEasyCam cam;
+        ofLight light;
+        int mode = POLYLINE_MODE;
+
+
+
 
 };
