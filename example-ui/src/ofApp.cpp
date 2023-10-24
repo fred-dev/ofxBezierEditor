@@ -22,10 +22,10 @@ void ofApp::setup(){
     gui.add(closedToggle.set("Closed", false));
     gui.add(fillColor.set("Fill Color", ofColor(128, 128, 128, 128), ofColor(0, 0), ofColor(255, 255)));
     gui.add(strokeColor.set("Stroke Color", ofColor(128, 128, 128, 128), ofColor(0, 0), ofColor(255, 255)));
-    gui.add(ribbonWidthSlider.set("Ribbon width", 1.0, 10.0, 150.0));
-    gui.add(ribbonPrecisionSlider.set("Ribbon Precision", 1, 5, 150));
-    gui.add(tubeRadiusSlider.set("Tube Radius", 1.0, 10.0, 150.0));
-    gui.add(tubePrecisionSlider.set("Tube Precision", 1, 5, 150));
+    gui.add(ribbonWidthSlider.set("Ribbon width", 10.0, 1.0, 150.0));
+    gui.add(ribbonPrecisionSlider.set("Ribbon Precision", 5, 1, 20));
+    gui.add(tubeRadiusSlider.set("Tube Radius", 10.0, 1.0, 150.0));
+    gui.add(tubePrecisionSlider.set("Tube Precision", 5, 1, 150));
     
     // Add listener for GUI events
     fillToggle.addListener(this, &ofApp::fillToggleChanged);
@@ -57,7 +57,7 @@ void ofApp::draw(){
         
         else if(mode == FAT_LINE_MODE){
             ofSetColor(myBezier.getColorStroke());
-            myBezier.getRibbonMesh().draw();
+            myBezier.getRibbonMesh().drawWireframe();
         }
         
         else if(mode == TUBE_MESH_MODE){

@@ -2,7 +2,8 @@
 
 #include "ofMain.h"
 #include "ofxMaps.h"
-#include "ofxBezierEditor.h" 
+
+#include "ofxBezierEditor.h"
 
 
 class ofApp: public ofBaseApp

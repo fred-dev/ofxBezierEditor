@@ -238,7 +238,7 @@ void ofxBezierEditor::savePoints(string filename){
     JSONBezier["bezier"]["colorStroke"]["b"] = colorStroke.b;
     JSONBezier["bezier"]["colorStroke"]["a"] = colorStroke.a;
     
-    
+#ifdef GEO_LINE
     for (int i = 0; i < curveVerticesGeo.size(); i++) {
         JSONBezier["bezier"]["vertices"][i]["x"] = curveVerticesGeo.at(i).pos.x ;
         JSONBezier["bezier"]["vertices"][i]["y"] = curveVerticesGeo.at(i).pos.y ;
@@ -253,6 +253,7 @@ void ofxBezierEditor::savePoints(string filename){
         JSONBezier["bezier"]["cp2"][i]["x"] = controlPoint2Geo.at(i).pos.x ;
         JSONBezier["bezier"]["cp2"][i]["y"] = controlPoint2Geo.at(i).pos.y ;
     }
+#endif
     
     // Save JSON to a file
     ofSavePrettyJson(filename, JSONBezier);
@@ -840,22 +841,21 @@ void ofxBezierEditor::updatePolyline(){
 }
 
 void ofxBezierEditor::generateTriangleStripFromPolyline() {
-    if(curveVertices.size() > 0){
+    if (curveVertices.size() > 0) {
         // Clear mesh (triangle strip)
         ribbonMesh.clear();
         ribbonMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-        // Create mesh (triangle strip
-        
+
         // Create vectors to store points and tangents
         vector<ofVec3f> points;
         vector<ofVec2f> tangents;
-        
+
         for (int i = 0; i < polyLineFromPoints.size(); i++) {
             points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
             if (i < polyLineFromPoints.size() - 1) {
                 ofVec2f tangent = polyLineFromPoints.getTangentAtIndex(i);
                 tangents.push_back(tangent);
-                
+
                 // Add intermediate points and tangents based on precisionMultiplier
                 for (int j = 1; j < meshPrecisionMultiplier; j++) {
                     float t = static_cast<float>(j) / static_cast<float>(meshPrecisionMultiplier);
@@ -866,37 +866,36 @@ void ofxBezierEditor::generateTriangleStripFromPolyline() {
                 }
             }
         }
-        
-        for (int i = 0; i < points.size() - 1; i++) {
+
+        for (int i = 0; i < points.size(); i++) {
             // Calculate the perpendicular vector
             ofVec2f perpendicular(-tangents[i].y, tangents[i].x); // Perpendicular vector
-            
-            // Normalize the perpendicular vector and scale it to the desired length
             perpendicular.normalize();
-            perpendicular *= ribbonWidth;
             
-            // Calculate the vertices for the current point and its corresponding perpendicular point
-            ofVec3f currentVertex = points[i];
-            ofVec3f perpendicularVertex(points[i].x + perpendicular.x, points[i].y + perpendicular.y, 0);
-            
+            // Calculate the vertices for both sides
+            ofVec3f currentPoint = points[i];
+            ofVec3f leftVertex = currentPoint - perpendicular * (ribbonWidth * 0.5);
+            ofVec3f rightVertex = currentPoint + perpendicular * (ribbonWidth * 0.5);
+
             // Add vertices to the mesh
-            ribbonMesh.addVertex(currentVertex);
-            ribbonMesh.addVertex(perpendicularVertex);
-            
+            ribbonMesh.addVertex(leftVertex);
+            ribbonMesh.addVertex(rightVertex);
+
             // Define the triangle strip indices
-            if (i > 0) {
+            if (i > 0 && i < points.size() - 1) {
                 // Create triangles connecting the current and previous vertices
-                ribbonMesh.addIndex(i * 2 - 2); // Previous perpendicular point
-                ribbonMesh.addIndex(i * 2 - 1); // Previous point
-                ribbonMesh.addIndex(i * 2);     // Current perpendicular point
+                ribbonMesh.addIndex((i - 1) * 2); // Previous left point
+                ribbonMesh.addIndex((i - 1) * 2 + 1); // Previous right point
+                ribbonMesh.addIndex(i * 2);     // Current left point
                 
-                ribbonMesh.addIndex(i * 2 - 1); // Previous point
-                ribbonMesh.addIndex(i * 2);     // Current perpendicular point
-                ribbonMesh.addIndex(i * 2 + 1); // Current point
+                ribbonMesh.addIndex((i - 1) * 2 + 1); // Previous right point
+                ribbonMesh.addIndex(i * 2);     // Current left point
+                ribbonMesh.addIndex(i * 2 + 1); // Current right point
             }
         }
     }
 }
+
 
 void ofxBezierEditor::updateAllFromVertices(){
 #ifdef GEO_LINE

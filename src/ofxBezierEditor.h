@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofEvents.h"
 
-#define GEO_LINE
+//#define GEO_LINE
 
 
 
