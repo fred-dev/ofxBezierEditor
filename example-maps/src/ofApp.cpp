@@ -9,10 +9,7 @@
 
 void ofApp::setup()
 {
-    
-
-ofSetLogLevel(OF_LOG_VERBOSE);
-    
+        
     coordinates =
     {
         { -33.971125, 151.252418 },
@@ -47,10 +44,7 @@ ofSetLogLevel(OF_LOG_VERBOSE);
                                                     bufferCache);
     
     tileLayer = std::make_shared<ofxMaps::MapTileLayer>(tileSet, 1 * 1920, 1 * 1080);
-    
     ofxGeo::Coordinate centre(-24.978199, 133.100608);
-    
-    
     tileLayer->setCenter(centre, 5);
     
     myBezier.loadPoints("ofxBezierInfo.json");
@@ -163,13 +157,6 @@ void ofApp::keyPressed(int key)
     }
     else if (key == 'L'){
         myBezier.loadPoints("ofxBezierInfo.json");
-    }
-    else if (key == 'P'){
-        myBezier.updateGeoCoordsFromPixel();
-        //myBezier.savePoints("ofxBezierInfo.json");
-    }
-    else if (key == 'g'){
-        myBezier.updatePixelCoordsFromGeo();
     }
     else if (key == 'S')
     {

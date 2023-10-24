@@ -115,7 +115,7 @@ void ofxBezierEditor::loadPoints(string filename){
         
         bIsClosed = JSONBezier["bezier"]["closed"].get<bool>();
         ofLogVerbose("ofxBezierEditor") << "bIsClosed: " << bIsClosed;
-
+        
         polyLineFromPoints.setClosed(bIsClosed);
         bfillBezier = JSONBezier["bezier"]["fill"].get<bool>();
         colorFill.set(
@@ -137,8 +137,6 @@ void ofxBezierEditor::loadPoints(string filename){
         // Read vertices from JSON
         curveVerticesGeo.clear();
         for (const auto& vertexJson : JSONBezier["bezier"]["vertices"]) {
-            ofLogVerbose("ofxBezierEditor") << "Curve vertexJson: " << vertexJson;
-    
             draggableVertex vtx;
             vtx.pos.x = vertexJson["x"].get<double>();
             vtx.pos.y = vertexJson["y"].get<double>();
@@ -152,8 +150,6 @@ void ofxBezierEditor::loadPoints(string filename){
         // Read control points from JSON
         controlPoint1Geo.clear();
         for (const auto& cpJson : JSONBezier["bezier"]["cp1"]) {
-            ofLogVerbose("ofxBezierEditor") << "CP 1 vertexJson: " << cpJson;
-
             draggableVertex cp;
             cp.pos.x = cpJson["x"].get<double>();
             cp.pos.y = cpJson["y"].get<double>();
@@ -162,11 +158,9 @@ void ofxBezierEditor::loadPoints(string filename){
             controlPoint1Geo.push_back(cp);
         }
         ofLogVerbose("ofxBezierEditor") << "controlPoint1Geo.size(): " << controlPoint1Geo.size();
-
+        
         controlPoint2Geo.clear();
         for (const auto& cpJson : JSONBezier["bezier"]["cp2"]) {
-            ofLogVerbose("ofxBezierEditor") << "CP 2 vertexJson: " << cpJson;
-
             draggableVertex cp;
             cp.pos.x = cpJson["x"].get<double>();
             cp.pos.y = cpJson["y"].get<double>();
@@ -175,7 +169,7 @@ void ofxBezierEditor::loadPoints(string filename){
             controlPoint2Geo.push_back(cp);
         }
         ofLogVerbose("ofxBezierEditor") << "controlPoint2Geo.size(): " << controlPoint2Geo.size();
-
+        
         updatePixelCoordsFromGeo();
 #else
         curveVertices.clear();
@@ -306,7 +300,7 @@ void ofxBezierEditor::draw(){
         }
         ofEndShape(bIsClosed);
         ofPopMatrix();
-    } // end of if(curveVertices.size() > 0){
+    }
     
 }
 
@@ -331,7 +325,7 @@ void ofxBezierEditor::drawOutline(){
         }
         ofEndShape(bIsClosed);
         ofPopMatrix();
-    } // end of if(curveVertices.size() > 0){
+    }
     
 }
 
@@ -525,8 +519,6 @@ void ofxBezierEditor::mouseDragged(ofMouseEventArgs &args){
                 controlPoint2.at(i).pos.x += deltaX;
                 controlPoint2.at(i).pos.y += deltaY;
             }
-            
-            
             
             mouseX = args.x;
             mouseY = args.y;
@@ -848,57 +840,60 @@ void ofxBezierEditor::updatePolyline(){
 }
 
 void ofxBezierEditor::generateTriangleStripFromPolyline() {
-    ribbonMesh.clear();
-    ribbonMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-    // Create mesh (triangle strip
-    
-    // Create vectors to store points and tangents
-    vector<ofVec3f> points;
-    vector<ofVec2f> tangents;
-    
-    for (int i = 0; i < polyLineFromPoints.size(); i++) {
-        points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
-        if (i < polyLineFromPoints.size() - 1) {
-            ofVec2f tangent = polyLineFromPoints.getTangentAtIndex(i);
-            tangents.push_back(tangent);
-            
-            // Add intermediate points and tangents based on precisionMultiplier
-            for (int j = 1; j < meshPrecisionMultiplier; j++) {
-                float t = static_cast<float>(j) / static_cast<float>(meshPrecisionMultiplier);
-                ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
-                ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
-                points.push_back(interpolatedPoint);
-                tangents.push_back(interpolatedTangent);
+    if(curveVertices.size() > 0){
+        // Clear mesh (triangle strip)
+        ribbonMesh.clear();
+        ribbonMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        // Create mesh (triangle strip
+        
+        // Create vectors to store points and tangents
+        vector<ofVec3f> points;
+        vector<ofVec2f> tangents;
+        
+        for (int i = 0; i < polyLineFromPoints.size(); i++) {
+            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
+            if (i < polyLineFromPoints.size() - 1) {
+                ofVec2f tangent = polyLineFromPoints.getTangentAtIndex(i);
+                tangents.push_back(tangent);
+                
+                // Add intermediate points and tangents based on precisionMultiplier
+                for (int j = 1; j < meshPrecisionMultiplier; j++) {
+                    float t = static_cast<float>(j) / static_cast<float>(meshPrecisionMultiplier);
+                    ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
+                    points.push_back(interpolatedPoint);
+                    tangents.push_back(interpolatedTangent);
+                }
             }
         }
-    }
-    
-    for (int i = 0; i < points.size() - 1; i++) {
-        // Calculate the perpendicular vector
-        ofVec2f perpendicular(-tangents[i].y, tangents[i].x); // Perpendicular vector
         
-        // Normalize the perpendicular vector and scale it to the desired length
-        perpendicular.normalize();
-        perpendicular *= ribbonWidth;
-        
-        // Calculate the vertices for the current point and its corresponding perpendicular point
-        ofVec3f currentVertex = points[i];
-        ofVec3f perpendicularVertex(points[i].x + perpendicular.x, points[i].y + perpendicular.y, 0);
-        
-        // Add vertices to the mesh
-        ribbonMesh.addVertex(currentVertex);
-        ribbonMesh.addVertex(perpendicularVertex);
-        
-        // Define the triangle strip indices
-        if (i > 0) {
-            // Create triangles connecting the current and previous vertices
-            ribbonMesh.addIndex(i * 2 - 2); // Previous perpendicular point
-            ribbonMesh.addIndex(i * 2 - 1); // Previous point
-            ribbonMesh.addIndex(i * 2);     // Current perpendicular point
+        for (int i = 0; i < points.size() - 1; i++) {
+            // Calculate the perpendicular vector
+            ofVec2f perpendicular(-tangents[i].y, tangents[i].x); // Perpendicular vector
             
-            ribbonMesh.addIndex(i * 2 - 1); // Previous point
-            ribbonMesh.addIndex(i * 2);     // Current perpendicular point
-            ribbonMesh.addIndex(i * 2 + 1); // Current point
+            // Normalize the perpendicular vector and scale it to the desired length
+            perpendicular.normalize();
+            perpendicular *= ribbonWidth;
+            
+            // Calculate the vertices for the current point and its corresponding perpendicular point
+            ofVec3f currentVertex = points[i];
+            ofVec3f perpendicularVertex(points[i].x + perpendicular.x, points[i].y + perpendicular.y, 0);
+            
+            // Add vertices to the mesh
+            ribbonMesh.addVertex(currentVertex);
+            ribbonMesh.addVertex(perpendicularVertex);
+            
+            // Define the triangle strip indices
+            if (i > 0) {
+                // Create triangles connecting the current and previous vertices
+                ribbonMesh.addIndex(i * 2 - 2); // Previous perpendicular point
+                ribbonMesh.addIndex(i * 2 - 1); // Previous point
+                ribbonMesh.addIndex(i * 2);     // Current perpendicular point
+                
+                ribbonMesh.addIndex(i * 2 - 1); // Previous point
+                ribbonMesh.addIndex(i * 2);     // Current perpendicular point
+                ribbonMesh.addIndex(i * 2 + 1); // Current point
+            }
         }
     }
 }
@@ -923,7 +918,7 @@ void ofxBezierEditor::updateAllFromVertices(){
 }
 #ifdef GEO_LINE
 void ofxBezierEditor::updateAllFromGeo(){
-
+    
     
     updatePolyline();
     
@@ -941,84 +936,87 @@ void ofxBezierEditor::updateAllFromGeo(){
 #endif
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(){
-    tubeMesh.clear();
-    tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-    
-    float tubeLength = polyLineFromPoints.size();
-    float tubeCircumference = 2.0 * PI * tubeRadius;
-    
-    for (int i = 0; i < polyLineFromPoints.size(); i++) {
-        const ofVec3f &p0 = polyLineFromPoints.getVertices()[i];
-        const ofVec3f &n0 = polyLineFromPoints.getNormalAtIndex(i);
-        const ofVec3f &t0 = polyLineFromPoints.getTangentAtIndex(i);
-        float r0 = tubeRadius;
+    if(curveVertices.size() > 0){
         
-        ofVec3f v0;
-        for (int j = 0; j < tubeResolution; j++) {
-            float p = j / static_cast<float>(tubeResolution);
-            float a = p * 360;
-            v0 = n0.rotated(a, t0);
+        tubeMesh.clear();
+        tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        
+        float tubeLength = polyLineFromPoints.size();
+        float tubeCircumference = 2.0 * PI * tubeRadius;
+        
+        for (int i = 0; i < polyLineFromPoints.size(); i++) {
+            const ofVec3f &p0 = polyLineFromPoints.getVertices()[i];
+            const ofVec3f &n0 = polyLineFromPoints.getNormalAtIndex(i);
+            const ofVec3f &t0 = polyLineFromPoints.getTangentAtIndex(i);
+            float r0 = tubeRadius;
             
-            // Calculate normalized texture coordinates
-            float u = a / 360.0f;                           // U-coordinate (around the tube)
-            float v = i / static_cast<float>(tubeLength);  // V-coordinate (along the tube)
-            
-            tubeMesh.addNormal(v0);
-            tubeMesh.addTexCoord(ofVec2f(u, v));
-            tubeMesh.addColor(colorStroke);
-            
-            
-            v0 *= r0;
-            v0 += p0;
-            
-            tubeMesh.addVertex(v0);
+            ofVec3f v0;
+            for (int j = 0; j < tubeResolution; j++) {
+                float p = j / static_cast<float>(tubeResolution);
+                float a = p * 360;
+                v0 = n0.rotated(a, t0);
+                
+                // Calculate normalized texture coordinates
+                float u = a / 360.0f;                           // U-coordinate (around the tube)
+                float v = i / static_cast<float>(tubeLength);  // V-coordinate (along the tube)
+                
+                tubeMesh.addNormal(v0);
+                tubeMesh.addTexCoord(ofVec2f(u, v));
+                tubeMesh.addColor(colorStroke);
+                
+                
+                v0 *= r0;
+                v0 += p0;
+                
+                tubeMesh.addVertex(v0);
+            }
         }
-    }
-    
-    //--------------------------------------------------------------------------
-    vector<glm::vec3> & verts = tubeMesh.getVertices();
-    int numOfVerts = verts.size();
-    bool bLeftToRight;
-    bool bRingEnd = false;
-    int i0, i1;
-    int k;
-    
-    int numOfTubeSections = polyLineFromPoints.size();
-    for(int i=0; i<numOfTubeSections; i++) {
         
-        bLeftToRight = (i % 2 == 0);
-        k = 0;
+        //--------------------------------------------------------------------------
+        vector<glm::vec3> & verts = tubeMesh.getVertices();
+        int numOfVerts = verts.size();
+        bool bLeftToRight;
+        bool bRingEnd = false;
+        int i0, i1;
+        int k;
         
-        for(int j=0; j<tubeResolution+1; j++) {
+        int numOfTubeSections = polyLineFromPoints.size();
+        for(int i=0; i<numOfTubeSections; i++) {
             
-            i0 = (i + 0) * tubeResolution + k;
-            i1 = (i + 1) * tubeResolution + k;
+            bLeftToRight = (i % 2 == 0);
+            k = 0;
             
-            if(bLeftToRight == true) {
-                k += 1;
-                if(k > tubeResolution-1) {
-                    k -= tubeResolution;
+            for(int j=0; j<tubeResolution+1; j++) {
+                
+                i0 = (i + 0) * tubeResolution + k;
+                i1 = (i + 1) * tubeResolution + k;
+                
+                if(bLeftToRight == true) {
+                    k += 1;
+                    if(k > tubeResolution-1) {
+                        k -= tubeResolution;
+                    }
+                } else {
+                    k -= 1;
+                    if(k < 0) {
+                        k += tubeResolution;
+                    }
                 }
-            } else {
-                k -= 1;
-                if(k < 0) {
-                    k += tubeResolution;
+                
+                if(i0 > numOfVerts - 1) {
+                    i0 -= numOfVerts;
                 }
-            }
-            
-            if(i0 > numOfVerts - 1) {
-                i0 -= numOfVerts;
-            }
-            if(i1 > numOfVerts - 1) {
-                i1 -= numOfVerts;
-            }
-            
-            tubeMesh.addIndex(i0);
-            tubeMesh.addIndex(i1);
-            
-            bRingEnd = (j == tubeResolution);
-            if(bRingEnd == true) {
+                if(i1 > numOfVerts - 1) {
+                    i1 -= numOfVerts;
+                }
+                
+                tubeMesh.addIndex(i0);
                 tubeMesh.addIndex(i1);
+                
+                bRingEnd = (j == tubeResolution);
+                if(bRingEnd == true) {
+                    tubeMesh.addIndex(i1);
+                }
             }
         }
     }
