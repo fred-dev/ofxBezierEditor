@@ -3,7 +3,7 @@
 #include "ofMain.h"
 #include "ofEvents.h"
 
-//#define GEO_LINE
+#define GEO_LINE
 
 
 
@@ -100,8 +100,8 @@ public:
     ofVboMesh getRibbonMesh() { return ribbonMesh; };
     bool getUseRibbonMesh() { return bUseRibbonMesh; };
     void setUseRibbonMesh(bool b) { bUseRibbonMesh = b; };
-    void setMeshPrecisionMultiplier(int m) { meshPrecisionMultiplier = m; updateAllFromVertices();};
-    int getMeshPrecisionMultiplier() { return meshPrecisionMultiplier; };
+    void setMeshPrecisionMultiplier(int m) { meshLengthPrecisionMultiplier = m; updateAllFromVertices();};
+    int getMeshPrecisionMultiplier() { return meshLengthPrecisionMultiplier; };
     float getRibbonWidth() { return ribbonWidth; };
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
@@ -172,7 +172,7 @@ private:
     
     // Mesh Generation
     void updateAllFromVertices();
-    int meshPrecisionMultiplier = 1;
+    int meshLengthPrecisionMultiplier = 1;
     void generateTriangleStripFromPolyline();
     float ribbonWidth = 10.0;
     

@@ -73,8 +73,8 @@
                 "y": 151.73690795898438
             }
         ],
-        "fill": true,
-        "meshPrecision": 4,
+        "fill": false,
+        "meshLengthPrecision": 4,
         "ribbonWidth": 20.0,
         "tubeRadius": 15.0,
         "tubeResolution": 50,

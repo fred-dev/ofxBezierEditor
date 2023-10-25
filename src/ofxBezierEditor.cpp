@@ -102,8 +102,8 @@ void ofxBezierEditor::loadPoints(string filename){
         ofLogVerbose("ofxBezierEditor") << "bUseRibbonMesh: " << bUseRibbonMesh;
         ribbonWidth = JSONBezier["bezier"]["ribbonWidth"].get<float>();
         ofLogVerbose("ofxBezierEditor") << "ribbonWidth: " << ribbonWidth;
-        meshPrecisionMultiplier = JSONBezier["bezier"]["meshPrecision"].get<int>();
-        ofLogVerbose("ofxBezierEditor") << "meshPrecisionMultiplier: " << meshPrecisionMultiplier;
+        meshLengthPrecisionMultiplier = JSONBezier["bezier"]["meshLengthPrecision"].get<int>();
+        ofLogVerbose("ofxBezierEditor") << "meshLengthPrecisionMultiplier: " << meshLengthPrecisionMultiplier;
         
         bUseTubeMesh = JSONBezier["bezier"]["useTubeMesh"].get<bool>();
         ofLogVerbose("ofxBezierEditor") << "bUseTubeMesh: " << bUseTubeMesh;
@@ -221,7 +221,7 @@ void ofxBezierEditor::savePoints(string filename){
     JSONBezier["bezier"]["closed"] = bIsClosed;
     
     JSONBezier["bezier"]["useRibbonMesh"] = bUseRibbonMesh;
-    JSONBezier["bezier"]["meshPrecision"] =  meshPrecisionMultiplier;
+    JSONBezier["bezier"]["meshPrecision"] =  meshLengthPrecisionMultiplier;
     JSONBezier["bezier"]["ribbonWidth"] = ribbonWidth;
     
     JSONBezier["bezier"]["useTubeMesh"] = bUseTubeMesh;
@@ -857,8 +857,8 @@ void ofxBezierEditor::generateTriangleStripFromPolyline() {
                 tangents.push_back(tangent);
 
                 // Add intermediate points and tangents based on precisionMultiplier
-                for (int j = 1; j < meshPrecisionMultiplier; j++) {
-                    float t = static_cast<float>(j) / static_cast<float>(meshPrecisionMultiplier);
+                for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
+                    float t = static_cast<float>(j) / static_cast<float>(meshLengthPrecisionMultiplier);
                     ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
                     ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
                     points.push_back(interpolatedPoint);
@@ -940,13 +940,35 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
         tubeMesh.clear();
         tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         
-        float tubeLength = polyLineFromPoints.size();
         float tubeCircumference = 2.0 * PI * tubeRadius;
         
+        vector<ofVec3f> points;
+        vector<ofVec3f> tangents;
+        vector<ofVec3f> normals;
         for (int i = 0; i < polyLineFromPoints.size(); i++) {
-            const ofVec3f &p0 = polyLineFromPoints.getVertices()[i];
-            const ofVec3f &n0 = polyLineFromPoints.getNormalAtIndex(i);
-            const ofVec3f &t0 = polyLineFromPoints.getTangentAtIndex(i);
+            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
+           
+                tangents.push_back(polyLineFromPoints.getTangentAtIndex(i));
+                normals.push_back(polyLineFromPoints.getNormalAtIndex(i));
+                
+                // Add intermediate points and tangents based on precisionMultiplier
+                for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
+                    float t = float(j) / float(meshLengthPrecisionMultiplier);
+                    ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedNormal = polyLineFromPoints.getNormalAtIndexInterpolated(i + t);
+
+                    points.push_back(interpolatedPoint);
+                    tangents.push_back(interpolatedTangent);
+                    normals.push_back(interpolatedNormal);
+                }
+        }
+        int tubeLength = points.size();
+
+        for (int i = 0; i < points.size(); i++) {
+            const ofVec3f &p0 = points[i];
+            const ofVec3f &n0 = normals[i];
+            const ofVec3f &t0 = tangents[i];
             float r0 = tubeRadius;
             
             ofVec3f v0;
@@ -979,7 +1001,7 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
         int i0, i1;
         int k;
         
-        int numOfTubeSections = polyLineFromPoints.size();
+        int numOfTubeSections = points.size();
         for(int i=0; i<numOfTubeSections; i++) {
             
             bLeftToRight = (i % 2 == 0);
@@ -1020,7 +1042,6 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
         }
     }
 }
-
 void ofxBezierEditor::setColorFill(ofColor c){
     colorFill = c;
 }
