@@ -1,7 +1,7 @@
 #include "ofxBezierEditor.h"
 
 #ifdef GEO_LINE
-#include "ofApp.h" // Include the header file that defines the ofApp class
+#include "MapsManager.h"
 #endif
 
 
@@ -136,10 +136,12 @@ void ofxBezierEditor::loadPoints(string filename){
 #ifdef GEO_LINE
         // Read vertices from JSON
         curveVerticesGeo.clear();
+        ofLogVerbose() << "vertices" << JSONBezier["bezier"]["vertices"].dump();
+
         for (const auto& vertexJson : JSONBezier["bezier"]["vertices"]) {
             draggableVertex vtx;
-            vtx.pos.x = vertexJson["x"].get<double>();
-            vtx.pos.y = vertexJson["y"].get<double>();
+            vtx.pos.x = vertexJson["x"];
+            vtx.pos.y = vertexJson["y"];
             vtx.bOver = false;
             vtx.bBeingDragged = false;
             vtx.bBeingSelected = false;
@@ -149,10 +151,11 @@ void ofxBezierEditor::loadPoints(string filename){
         
         // Read control points from JSON
         controlPoint1Geo.clear();
+        //dump the json to the console
         for (const auto& cpJson : JSONBezier["bezier"]["cp1"]) {
             draggableVertex cp;
-            cp.pos.x = cpJson["x"].get<double>();
-            cp.pos.y = cpJson["y"].get<double>();
+            cp.pos.x = cpJson["x"];
+            cp.pos.y = cpJson["y"];
             cp.bOver = false;
             cp.bBeingDragged = false;
             controlPoint1Geo.push_back(cp);
@@ -162,8 +165,8 @@ void ofxBezierEditor::loadPoints(string filename){
         controlPoint2Geo.clear();
         for (const auto& cpJson : JSONBezier["bezier"]["cp2"]) {
             draggableVertex cp;
-            cp.pos.x = cpJson["x"].get<double>();
-            cp.pos.y = cpJson["y"].get<double>();
+            cp.pos.x = cpJson["x"];
+            cp.pos.y = cpJson["y"];
             cp.bOver = false;
             cp.bBeingDragged = false;
             controlPoint2Geo.push_back(cp);
@@ -221,7 +224,7 @@ void ofxBezierEditor::savePoints(string filename){
     JSONBezier["bezier"]["closed"] = bIsClosed;
     
     JSONBezier["bezier"]["useRibbonMesh"] = bUseRibbonMesh;
-    JSONBezier["bezier"]["meshPrecision"] =  meshLengthPrecisionMultiplier;
+    JSONBezier["bezier"]["meshLengthPrecision"] =  meshLengthPrecisionMultiplier;
     JSONBezier["bezier"]["ribbonWidth"] = ribbonWidth;
     
     JSONBezier["bezier"]["useTubeMesh"] = bUseTubeMesh;
@@ -840,7 +843,7 @@ void ofxBezierEditor::updatePolyline(){
     }
 }
 
-void ofxBezierEditor::generateTriangleStripFromPolyline() {
+void ofxBezierEditor::generateTriangleStripFromPolyline(ofPolyline bezierLine) {
     if (curveVertices.size() > 0) {
         // Clear mesh (triangle strip)
         ribbonMesh.clear();
@@ -850,17 +853,17 @@ void ofxBezierEditor::generateTriangleStripFromPolyline() {
         vector<ofVec3f> points;
         vector<ofVec2f> tangents;
 
-        for (int i = 0; i < polyLineFromPoints.size(); i++) {
-            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
-            if (i < polyLineFromPoints.size() - 1) {
-                ofVec2f tangent = polyLineFromPoints.getTangentAtIndex(i);
+        for (int i = 0; i < bezierLine.size(); i++) {
+            points.push_back(ofVec3f(bezierLine[i].x, bezierLine[i].y, 0));
+            if (i < bezierLine.size() - 1) {
+                ofVec2f tangent = bezierLine.getTangentAtIndex(i);
                 tangents.push_back(tangent);
 
                 // Add intermediate points and tangents based on precisionMultiplier
                 for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
                     float t = static_cast<float>(j) / static_cast<float>(meshLengthPrecisionMultiplier);
-                    ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
-                    ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
+                    ofVec3f interpolatedPoint = bezierLine.getPointAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedTangent = bezierLine.getTangentAtIndexInterpolated(i + t);
                     points.push_back(interpolatedPoint);
                     tangents.push_back(interpolatedTangent);
                 }
@@ -908,10 +911,10 @@ void ofxBezierEditor::updateAllFromVertices(){
     calculateCenter();
     
     if(bUseRibbonMesh){
-        generateTriangleStripFromPolyline();
+        generateTriangleStripFromPolyline(polyLineFromPoints);;
     }
     if(bUseTubeMesh){
-        generateTubeMeshFromPolyline();
+        generateTubeMeshFromPolyline(polyLineFromPoints);
     }
     
 }
@@ -926,15 +929,19 @@ void ofxBezierEditor::updateAllFromGeo(){
     calculateCenter();
     
     if(bUseRibbonMesh){
-        generateTriangleStripFromPolyline();
+        generateTriangleStripFromPolyline(polyLineFromPoints);;
     }
     if(bUseTubeMesh){
-        generateTubeMeshFromPolyline();
+        generateTubeMeshFromPolyline(polyLineFromPoints);
     }
 }
 #endif
+ofVboMesh ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline bezierLine){
+    generateTubeMeshFromPolyline(bezierLine);
+    return tubeMesh;
+}
 
-void ofxBezierEditor::generateTubeMeshFromPolyline(){
+void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline bezierLine){
     if(curveVertices.size() > 0){
         
         tubeMesh.clear();
@@ -945,18 +952,18 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
         vector<ofVec3f> points;
         vector<ofVec3f> tangents;
         vector<ofVec3f> normals;
-        for (int i = 0; i < polyLineFromPoints.size(); i++) {
-            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
+        for (int i = 0; i < bezierLine.size(); i++) {
+            points.push_back(ofVec3f(bezierLine[i].x, bezierLine[i].y, 0));
            
-                tangents.push_back(polyLineFromPoints.getTangentAtIndex(i));
-                normals.push_back(polyLineFromPoints.getNormalAtIndex(i));
+                tangents.push_back(bezierLine.getTangentAtIndex(i));
+                normals.push_back(bezierLine.getNormalAtIndex(i));
                 
                 // Add intermediate points and tangents based on precisionMultiplier
                 for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
                     float t = float(j) / float(meshLengthPrecisionMultiplier);
-                    ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
-                    ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
-                    ofVec2f interpolatedNormal = polyLineFromPoints.getNormalAtIndexInterpolated(i + t);
+                    ofVec3f interpolatedPoint = bezierLine.getPointAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedTangent = bezierLine.getTangentAtIndexInterpolated(i + t);
+                    ofVec2f interpolatedNormal = bezierLine.getNormalAtIndexInterpolated(i + t);
 
                     points.push_back(interpolatedPoint);
                     tangents.push_back(interpolatedTangent);
@@ -1083,7 +1090,7 @@ void ofxBezierEditor::updatePixelCoordsFromGeo(){
     
     curveVertices.clear();
     for(int i = 0; i < curveVerticesGeo.size(); i++){
-        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(curveVerticesGeo[i].pos);
+        std::shared_ptr<glm::vec2> tempPixVtx = MapsManager::getInstance().coordsToPixelsConvertor(curveVerticesGeo[i].pos);
         if (tempPixVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempPixVtx;
@@ -1095,7 +1102,7 @@ void ofxBezierEditor::updatePixelCoordsFromGeo(){
     
     controlPoint1.clear();
     for(int i = 0; i < controlPoint1Geo.size(); i++){
-        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(controlPoint1Geo[i].pos);
+        std::shared_ptr<glm::vec2> tempPixVtx = MapsManager::getInstance().coordsToPixelsConvertor(controlPoint1Geo[i].pos);
         if (tempPixVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempPixVtx;
@@ -1107,7 +1114,7 @@ void ofxBezierEditor::updatePixelCoordsFromGeo(){
     
     controlPoint2.clear();
     for(int i = 0; i < controlPoint2Geo.size(); i++){
-        std::shared_ptr<glm::vec2> tempPixVtx = ((ofApp*) ofGetAppPtr())->coordsToPixelsConvertor(controlPoint2Geo[i].pos);
+        std::shared_ptr<glm::vec2> tempPixVtx = MapsManager::getInstance().coordsToPixelsConvertor(controlPoint2Geo[i].pos);
         if (tempPixVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempPixVtx;
@@ -1123,7 +1130,7 @@ void ofxBezierEditor::updatePixelCoordsFromGeo(){
 void ofxBezierEditor::updateGeoCoordsFromPixel(){
     curveVerticesGeo.clear();
     for(int i = 0; i < curveVertices.size(); i++){
-        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(curveVertices[i].pos);
+        std::shared_ptr<glm::vec2> tempGeoVtx = MapsManager::getInstance().pixelsToCoordsConvertor(curveVertices[i].pos);
         if (tempGeoVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempGeoVtx;
@@ -1135,7 +1142,7 @@ void ofxBezierEditor::updateGeoCoordsFromPixel(){
     
     controlPoint1Geo.clear();
     for(int i = 0; i < controlPoint1.size(); i++){
-        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(controlPoint1[i].pos);
+        std::shared_ptr<glm::vec2> tempGeoVtx = MapsManager::getInstance().pixelsToCoordsConvertor(controlPoint1[i].pos);
         if (tempGeoVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempGeoVtx;
@@ -1146,7 +1153,7 @@ void ofxBezierEditor::updateGeoCoordsFromPixel(){
     
     controlPoint2Geo.clear();
     for(int i = 0; i < controlPoint2.size(); i++){
-        std::shared_ptr<glm::vec2> tempGeoVtx = ((ofApp*) ofGetAppPtr())->pixelsToCoordsConvertor(controlPoint2[i].pos);
+        std::shared_ptr<glm::vec2> tempGeoVtx = MapsManager::getInstance().pixelsToCoordsConvertor(controlPoint2[i].pos);
         if (tempGeoVtx) {
             draggableVertex tmpDVtx;
             tmpDVtx.pos = *tempGeoVtx;

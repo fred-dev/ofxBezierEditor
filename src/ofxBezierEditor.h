@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofEvents.h"
-
 #define GEO_LINE
 
 
@@ -106,6 +105,8 @@ public:
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
     ofVboMesh getTubeMesh() { return tubeMesh; };
+    ofVboMesh getTubeMeshFromPolyline(ofPolyline bezierLine);
+
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
     void setTubeRadius(float r) { tubeRadius = r; updateAllFromVertices();};
@@ -173,10 +174,10 @@ private:
     // Mesh Generation
     void updateAllFromVertices();
     int meshLengthPrecisionMultiplier = 1;
-    void generateTriangleStripFromPolyline();
+    void generateTriangleStripFromPolyline(ofPolyline bezierLine);
     float ribbonWidth = 10.0;
     
-    void generateTubeMeshFromPolyline();
+    void generateTubeMeshFromPolyline(ofPolyline bezierLine);
     int tubeResolution = 10;
     float tubeRadius = 10.0;
 
