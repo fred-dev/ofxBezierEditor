@@ -43,7 +43,7 @@ public:
     ofParameter<ofColor> fillColor;
     ofParameter<ofColor> strokeColor;
     ofParameter<float> ribbonWidthSlider;
-    ofParameter<int> ribbonPrecisionSlider;
+    ofParameter<int> meshLengthPrecisionSlider;
     ofParameter<float> tubeRadiusSlider;
     ofParameter<int> tubePrecisionSlider;
 
@@ -55,7 +55,7 @@ public:
     
     void ribbonWidthSliderChanged(float &value);
     void ribbonWidthSliderChnaged(float &value);
-    void ribbonPrecisionSliderChanged(int &value);
+    void meshLengthPrecisionSliderChanged(int &value);
     void tubeRadiusSliderChanged(float &value);
     void tubePrecisionSliderChanged(int &value);
     

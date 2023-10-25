@@ -3,14 +3,13 @@
 #include "ofMain.h"
 #include "ofEvents.h"
 
-
 class draggableVertex {
 public:
-    float x;
-    float y;
-    bool bBeingDragged;
-    bool bOver;
-    bool bBeingSelected;
+    glm::vec2 pos = glm::vec2(0,0);
+    bool bBeingDragged = false;
+    bool bOver = false;
+    bool bBeingSelected = false;
+    
 };
 
 class ofxBezierEditor {
@@ -18,7 +17,9 @@ class ofxBezierEditor {
 public:
     // Constructors and Destructor
     ~ofxBezierEditor();
+
     ofxBezierEditor();
+
 
     // Vertex and Control Point Containers
     vector<draggableVertex> curveVertices;
@@ -91,8 +92,8 @@ public:
     ofVboMesh getRibbonMesh() { return ribbonMesh; };
     bool getUseRibbonMesh() { return bUseRibbonMesh; };
     void setUseRibbonMesh(bool b) { bUseRibbonMesh = b; };
-    void setMeshPrecisionMultiplier(int m) { meshPrecisionMultiplier = m; updateAllFromVertices();};
-    int getMeshPrecisionMultiplier() { return meshPrecisionMultiplier; };
+    void setMeshLengthPrecisionMultiplier(int m) { meshLengthPrecisionMultiplier = m; updateAllFromVertices();};
+    int getMeshLengthPrecisionMultiplier() { return meshLengthPrecisionMultiplier; };
     float getRibbonWidth() { return ribbonWidth; };
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
@@ -107,7 +108,7 @@ public:
     void setReactToMouseAndKeyEvents(bool b);
     void registerToEvents();
     void unregisterFromEvents();
-
+    
 private:
     // Private Variables
     int currentPointToMove;
@@ -158,12 +159,13 @@ private:
     
     // Mesh Generation
     void updateAllFromVertices();
-    int meshPrecisionMultiplier = 1;
+    int meshLengthPrecisionMultiplier = 1;
     void generateTriangleStripFromPolyline();
     float ribbonWidth = 10.0;
     
     void generateTubeMeshFromPolyline();
     int tubeResolution = 10;
     float tubeRadius = 10.0;
+
 };
 

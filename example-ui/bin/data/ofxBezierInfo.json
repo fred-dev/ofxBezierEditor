@@ -1,23 +1,17 @@
 {
     "bezier": {
         "closed": false,
-        "useRibbonMesh": true,
-        "ribbonWidth":20.0,
-        "useTubeMesh": true,
-        "meshPrecision":4,
-        "tubeRadius": 15.0,
-        "tubeResolution" : 50,
         "colorFill": {
-            "a": 255, 
-            "b": 25,
-            "g": 52,
-            "r": 255
+            "a": 255,
+            "b": 17,
+            "g": 128,
+            "r": 98
         },
         "colorStroke": {
             "a": 255,
-            "b": 255,
-            "g": 88,
-            "r": 255
+            "b": 71,
+            "g": 36,
+            "r": 128
         },
         "cp1": [
             {
@@ -59,8 +53,8 @@
                 "y": 200.95318603515625
             },
             {
-                "x": 385.260009765625,
-                "y": 182.27969360351563
+                "x": 269.2938232421875,
+                "y": 251.28369140625
             },
             {
                 "x": 319.44158935546875,
@@ -72,6 +66,12 @@
             }
         ],
         "fill": true,
+        "meshLengthPrecision": 4,
+        "ribbonWidth": 20.0,
+        "tubeRadius": 15.0,
+        "tubeResolution": 50,
+        "useRibbonMesh": true,
+        "useTubeMesh": true,
         "vertices": [
             {
                 "x": 908.6541748046875,
@@ -86,8 +86,8 @@
                 "y": 298.6195068359375
             },
             {
-                "x": 337.744384765625,
-                "y": 406.62872314453125
+                "x": 309.75714111328125,
+                "y": 394.85406494140625
             },
             {
                 "x": 393.6993408203125,

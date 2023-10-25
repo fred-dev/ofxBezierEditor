@@ -22,10 +22,10 @@ void ofApp::setup(){
     gui.add(closedToggle.set("Closed", false));
     gui.add(fillColor.set("Fill Color", ofColor(128, 128, 128, 128), ofColor(0, 0), ofColor(255, 255)));
     gui.add(strokeColor.set("Stroke Color", ofColor(128, 128, 128, 128), ofColor(0, 0), ofColor(255, 255)));
-    gui.add(ribbonWidthSlider.set("Ribbon width", 1.0, 10.0, 150.0));
-    gui.add(ribbonPrecisionSlider.set("Ribbon Precision", 1, 5, 150));
-    gui.add(tubeRadiusSlider.set("Tube Radius", 1.0, 10.0, 150.0));
-    gui.add(tubePrecisionSlider.set("Tube Precision", 1, 5, 150));
+    gui.add(ribbonWidthSlider.set("Ribbon width", 10.0, 1.0, 150.0));
+    gui.add(meshLengthPrecisionSlider.set("Ribbon Precision", 5, 1, 50));
+    gui.add(tubeRadiusSlider.set("Tube Radius", 10.0, 1.0, 150.0));
+    gui.add(tubePrecisionSlider.set("Tube Precision", 5, 1, 15));
     
     // Add listener for GUI events
     fillToggle.addListener(this, &ofApp::fillToggleChanged);
@@ -33,7 +33,7 @@ void ofApp::setup(){
     fillColor.addListener(this, &ofApp::fillColorChanged);
     strokeColor.addListener(this, &ofApp::strokeColorChanged);
     ribbonWidthSlider.addListener(this, &ofApp::ribbonWidthSliderChanged);
-    ribbonPrecisionSlider.addListener(this, &ofApp::ribbonPrecisionSliderChanged);
+    meshLengthPrecisionSlider.addListener(this, &ofApp::meshLengthPrecisionSliderChanged);
     tubeRadiusSlider.addListener(this, &ofApp::tubeRadiusSliderChanged);
     tubePrecisionSlider.addListener(this, &ofApp::tubePrecisionSliderChanged);
     
@@ -165,8 +165,8 @@ void ofApp::ribbonWidthSliderChnaged(float &value){
     myBezier.setRibbonWidth(value);
 }
 
-void ofApp::ribbonPrecisionSliderChanged(int &value){
-    myBezier.setMeshPrecisionMultiplier(value);
+void ofApp::meshLengthPrecisionSliderChanged(int &value){
+    myBezier.setMeshLengthPrecisionMultiplier(value);
 }
 
 void ofApp::tubeRadiusSliderChanged(float &value){
