@@ -4,7 +4,7 @@
         "useRibbonMesh": true,
         "ribbonWidth":20.0,
         "useTubeMesh": true,
-        "meshPrecision":4,
+        "meshLengthPrecision":4,
         "tubeRadius": 15.0,
         "tubeResolution" : 50,
         "colorFill": {

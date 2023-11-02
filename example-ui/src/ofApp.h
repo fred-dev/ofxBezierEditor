@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxBezierEditor.h"
 #include "ofxGui.h"
+#include "ofxBranchesPrimitive.h"
 
 enum OperationMode {
     POLYLINE_MODE,
@@ -28,7 +29,7 @@ public:
     void gotMessage(ofMessage msg);
     void exit();
     
-    
+    ofxBranchesPrimitive tube;
     ofxBezierEditor myBezier;
     bool bdrawBezierInfo;
         

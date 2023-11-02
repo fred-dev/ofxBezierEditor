@@ -4,7 +4,7 @@
 #include "ofEvents.h"
 #define GEO_LINE
 
-
+#include "ofxBranchesPrimitive.h"
 
 class draggableVertex {
 public:
@@ -104,8 +104,8 @@ public:
     float getRibbonWidth() { return ribbonWidth; };
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
-    ofVboMesh getTubeMesh() { return tubeMesh; };
-    ofVboMesh getTubeMeshFromPolyline(ofPolyline bezierLine);
+    ofxBranchesPrimitive getTubeMesh() { return tube; };
+    ofxBranchesPrimitive getTubeMeshFromPolyline(ofPolyline bezierLine);
 
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
@@ -180,6 +180,8 @@ private:
     void generateTubeMeshFromPolyline(ofPolyline bezierLine);
     int tubeResolution = 10;
     float tubeRadius = 10.0;
+    ofxBranchesPrimitive tube;
+
 
 };
 

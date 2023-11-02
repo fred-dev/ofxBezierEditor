@@ -25,7 +25,7 @@ void ofApp::setup(){
     gui.add(ribbonWidthSlider.set("Ribbon width", 10.0, 1.0, 150.0));
     gui.add(ribbonPrecisionSlider.set("Ribbon Precision", 5, 1, 20));
     gui.add(tubeRadiusSlider.set("Tube Radius", 10.0, 1.0, 150.0));
-    gui.add(tubePrecisionSlider.set("Tube Precision", 5, 1, 150));
+    gui.add(tubePrecisionSlider.set("Tube Precision", 9, 1, 150));
     
     // Add listener for GUI events
     fillToggle.addListener(this, &ofApp::fillToggleChanged);
@@ -67,6 +67,24 @@ void ofApp::draw(){
             ofScale(1, -1);
             ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
             myBezier.getTubeMesh().draw();
+            
+//            auto n = myBezier.getTubeMesh().getNormals();
+//            auto v = myBezier.getTubeMesh().getVertices();
+//            float normalLength = 0.5;
+//
+//            
+//                ofSetColor(0,255,0);
+//                for(unsigned int i=0; i < n.size() ;i++){
+//                    ofDrawLine(v[i].x,v[i].y,v[i].z,
+//                           v[i].x+n[i].x*normalLength,v[i].y+n[i].y*normalLength,v[i].z+n[i].z*normalLength);
+//
+//                    ofDrawLine(.98*v[i].x,.98*v[i].y,.98*v[i].z,
+//                           .98*v[i].x+n[i].x*normalLength*.2,.98*v[i].y+n[i].y*normalLength*.2,.98*v[i].z+n[i].z*normalLength*.2);
+//                    ofDrawLine(.98*v[i].x+n[i].x*normalLength*.2,.98*v[i].y+n[i].y*normalLength*.2,.98*v[i].z+n[i].z*normalLength*.2,
+//                           v[i].x+n[i].x*normalLength*.2,v[i].y+n[i].y*normalLength*.2,v[i].z+n[i].z*normalLength*.2);
+//                }
+            
+
             cam.end();
             ofDisableDepthTest();
         }

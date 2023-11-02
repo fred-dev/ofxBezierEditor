@@ -1,2 +1,3 @@
 ofxBezierEditor
+ofxBranchesPrimitive
 ofxGui

@@ -4,4 +4,9 @@
 	<Stroke>10.15</Stroke>
 	<Fill_Color>98, 128, 17, 255</Fill_Color>
 	<Stroke_Color>128, 36, 71, 255</Stroke_Color>
+	<Closed>0</Closed>
+	<Ribbon_width>10</Ribbon_width>
+	<Ribbon_Precision>1</Ribbon_Precision>
+	<Tube_Radius>10</Tube_Radius>
+	<Tube_Precision>14</Tube_Precision>
 </group>
