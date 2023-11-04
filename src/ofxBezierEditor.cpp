@@ -816,7 +816,7 @@ void ofxBezierEditor::generateTriangleStripFromPolyline() {
             }
         }
 
-        for (int i = 0; i < points.size(); i++) {
+        for (int i = 0; i < points.size()-1; i++) {
             // Calculate the perpendicular vector
             ofVec2f perpendicular(-tangents[i].y, tangents[i].x); // Perpendicular vector
             perpendicular.normalize();
