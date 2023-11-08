@@ -936,61 +936,75 @@ void ofxBezierEditor::updateAllFromGeo(){
     }
 }
 #endif
-ofxBranchesPrimitive ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline bezierLine){
+ofVboMesh ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline bezierLine){
     generateTubeMeshFromPolyline(bezierLine);
-    return tube;
+    return tubeMesh;
 }
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline bezierLine){
-    if(curveVertices.size() > 0){
-        tube.clear();
+    if(polyLineFromPoints.size() > 1){
         
-        
-        
-        //tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+        tubeMesh.clear();
+        tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         
         float tubeCircumference = 2.0 * PI * tubeRadius;
         
         vector<ofVec3f> points;
-//        vector<ofVec3f> tangents;
-//        vector<ofVec3f> normals;
-        for (int i = 0; i < bezierLine.size(); i++) {
-            points.push_back(ofVec3f(bezierLine[i].x, bezierLine[i].y, 0));
+        vector<ofVec3f> tangents;
+        vector<ofVec3f> normals;
+        for (int i = 0; i < polyLineFromPoints.size(); i++) {
+            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
             
-//            tangents.push_back(bezierLine.getTangentAtIndex(i));
-//            normals.push_back(bezierLine.getNormalAtIndex(i));
+            tangents.push_back(polyLineFromPoints.getTangentAtIndex(i));
+            normals.push_back(polyLineFromPoints.getNormalAtIndex(i));
             
             // Add intermediate points and tangents based on precisionMultiplier
             for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
                 float t = float(j) / float(meshLengthPrecisionMultiplier);
-                ofVec3f interpolatedPoint = bezierLine.getPointAtIndexInterpolated(i + t);
-//                ofVec2f interpolatedTangent = bezierLine.getTangentAtIndexInterpolated(i + t);
-//                ofVec2f interpolatedNormal = bezierLine.getNormalAtIndexInterpolated(i + t);
+                ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
+                ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
+                ofVec2f interpolatedNormal = polyLineFromPoints.getNormalAtIndexInterpolated(i + t);
                 
                 points.push_back(interpolatedPoint);
-//                tangents.push_back(interpolatedTangent);
-//                normals.push_back(interpolatedNormal);
+                tangents.push_back(interpolatedTangent);
+                normals.push_back(interpolatedNormal);
             }
         }
-        glm::vec4 point = glm::vec4(0.0f,0.0f,0.0f, 1.0);
-
-        for (int i = 0; i < points.size(); i++) {
-            point.x =points[i].x;
-            
-            point.y =points[i].y;
-            point.z = points[i].z;
-            tube.addVertex(point);
-        }
-//        auto opt = ofxBranchesPrimitiveOptions{
-//            true, //cap
-//            tubeRadius,
-//            tubeResolution,
-//            1, //textureRepeat
-//            1.0 //radiusDecrease
-//        };
-//        tube.setup(opt);
-        tube.build();
+        int tubeLength = points.size();
+        vector<ofVec3f> circleVertices;
+        vector<ofVec3f> allCircleVertices;
         
+        // Generate vertices for the circles
+        for (int i = 0; i < tubeLength; i++) {
+            const ofVec3f &p0 = points[i];
+            const ofVec3f &n0 = normals[i];
+            const ofVec3f &t0 = tangents[i];
+            
+            for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
+                float p = j / static_cast<float>(tubeResolution);
+                float a = p * 360;
+                ofVec3f v0 = n0.getRotated(a, t0) * tubeRadius + p0;
+                
+                // Calculate normals, texture coords, and colors for each vertex
+                ofVec3f normal = v0 - p0;
+                normal.normalize();
+                float u = j / static_cast<float>(tubeResolution);
+                float v = i / static_cast<float>(tubeLength);
+                
+                // Add the vertex, normal, texcoord, and color to the mesh
+                tubeMesh.addVertex(v0);
+                tubeMesh.addNormal(normal);
+                tubeMesh.addTexCoord(ofVec2f(u, v));
+                tubeMesh.addColor(colorStroke);
+                
+                if (i != tubeLength - 1) {
+                    // Connect the current circle to the next one
+                    int nextCircleIdx = (i + 1) * (tubeResolution + 1) + j;
+                    tubeMesh.addIndex(i * (tubeResolution + 1) + j); // current vertex
+                    tubeMesh.addIndex(nextCircleIdx); // corresponding vertex on the next circle
+                }
+            }
+        }
     }
     
 }

@@ -104,8 +104,8 @@ public:
     float getRibbonWidth() { return ribbonWidth; };
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
-    ofxBranchesPrimitive getTubeMesh() { return tube; };
-    ofxBranchesPrimitive getTubeMeshFromPolyline(ofPolyline bezierLine);
+    ofVboMesh getTubeMesh() { return tubeMesh; };
+    ofVboMesh getTubeMeshFromPolyline(ofPolyline bezierLine);
 
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
@@ -180,7 +180,6 @@ private:
     void generateTubeMeshFromPolyline(ofPolyline bezierLine);
     int tubeResolution = 10;
     float tubeRadius = 10.0;
-    ofxBranchesPrimitive tube;
 
 
 };
