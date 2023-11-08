@@ -69,7 +69,8 @@ void ofApp::draw(){
             light.enable();
             ofScale(1, -1);
             ofTranslate(-ofGetWidth() / 2, -ofGetHeight() / 2);
-            
+            ofSetColor(myBezier.getColorStroke());
+
             if(wireframeToggle){
                 // Draw the tube mesh
                 myBezier.getTubeMesh().drawWireframe();

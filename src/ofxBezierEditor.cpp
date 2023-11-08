@@ -917,7 +917,6 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
                 tubeMesh.addVertex(v0);
                 tubeMesh.addNormal(normal);
                 tubeMesh.addTexCoord(ofVec2f(u, v));
-                tubeMesh.addColor(colorStroke);
                 
                 if (i != tubeLength - 1) {
                     // Connect the current circle to the next one
