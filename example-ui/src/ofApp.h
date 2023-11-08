@@ -46,6 +46,9 @@ public:
     ofParameter<int> meshLengthPrecisionSlider;
     ofParameter<float> tubeRadiusSlider;
     ofParameter<int> tubePrecisionSlider;
+    ofParameter<bool> wireframeToggle;
+    ofParameter<bool> drawNormalsToggle;
+
 
     
     void fillToggleChanged(bool &value);

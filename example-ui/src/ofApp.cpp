@@ -26,6 +26,9 @@ void ofApp::setup(){
     gui.add(meshLengthPrecisionSlider.set("Ribbon Precision", 5, 1, 50));
     gui.add(tubeRadiusSlider.set("Tube Radius", 10.0, 1.0, 150.0));
     gui.add(tubePrecisionSlider.set("Tube Precision", 5, 1, 15));
+    gui.add(wireframeToggle.set("Draw wireframe", false));
+    gui.add(drawNormalsToggle.set("Draw normals", false));
+    
     
     // Add listener for GUI events
     fillToggle.addListener(this, &ofApp::fillToggleChanged);
@@ -60,13 +63,39 @@ void ofApp::draw(){
             myBezier.getRibbonMesh().draw();
         }
         
-        else if(mode == TUBE_MESH_MODE){
+        else if (mode == TUBE_MESH_MODE) {
             ofEnableDepthTest();
             cam.begin();
             light.enable();
             ofScale(1, -1);
-            ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
-            myBezier.getTubeMesh().draw();
+            ofTranslate(-ofGetWidth() / 2, -ofGetHeight() / 2);
+            
+            if(wireframeToggle){
+                // Draw the tube mesh
+                myBezier.getTubeMesh().drawWireframe();
+            }
+            else{
+                // Draw the tube mesh
+                myBezier.getTubeMesh().draw();
+            }
+           
+            if(drawNormalsToggle){
+                ofPushStyle();
+                ofSetColor(ofColor::green);
+                
+                // Draw the normals
+                const float normalLength = 7.0f; // Length of the normal lines
+                auto mesh = myBezier.getTubeMesh(); // Get a reference to the mesh
+                for (int i = 0; i < mesh.getNumVertices(); ++i) {
+                    ofVec3f vertex = mesh.getVertex(i); // Get the vertex position
+                    ofVec3f normal = mesh.getNormal(i) * normalLength; // Get the normal and scale it
+                    ofDrawLine(vertex, vertex + normal); // Draw the line representing the normal
+                }
+                
+                ofPopStyle();
+            
+            }
+
             cam.end();
             ofDisableDepthTest();
         }
