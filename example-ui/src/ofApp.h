@@ -3,7 +3,6 @@
 #include "ofMain.h"
 #include "ofxBezierEditor.h"
 #include "ofxGui.h"
-#include "ofxBranchesPrimitive.h"
 
 enum OperationMode {
     POLYLINE_MODE,
