@@ -942,7 +942,7 @@ ofVboMesh ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline bezierLine){
 }
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline bezierLine){
-    if(polyLineFromPoints.size() > 1){
+    if(bezierLine.size() > 1){
         
         tubeMesh.clear();
         tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
@@ -952,18 +952,18 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline bezierLine){
         vector<ofVec3f> points;
         vector<ofVec3f> tangents;
         vector<ofVec3f> normals;
-        for (int i = 0; i < polyLineFromPoints.size(); i++) {
-            points.push_back(ofVec3f(polyLineFromPoints[i].x, polyLineFromPoints[i].y, 0));
+        for (int i = 0; i < bezierLine.size(); i++) {
+            points.push_back(ofVec3f(bezierLine[i].x, bezierLine[i].y, 0));
             
-            tangents.push_back(polyLineFromPoints.getTangentAtIndex(i));
-            normals.push_back(polyLineFromPoints.getNormalAtIndex(i));
+            tangents.push_back(bezierLine.getTangentAtIndex(i));
+            normals.push_back(bezierLine.getNormalAtIndex(i));
             
             // Add intermediate points and tangents based on precisionMultiplier
             for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
                 float t = float(j) / float(meshLengthPrecisionMultiplier);
-                ofVec3f interpolatedPoint = polyLineFromPoints.getPointAtIndexInterpolated(i + t);
-                ofVec2f interpolatedTangent = polyLineFromPoints.getTangentAtIndexInterpolated(i + t);
-                ofVec2f interpolatedNormal = polyLineFromPoints.getNormalAtIndexInterpolated(i + t);
+                ofVec3f interpolatedPoint = bezierLine.getPointAtIndexInterpolated(i + t);
+                ofVec2f interpolatedTangent = bezierLine.getTangentAtIndexInterpolated(i + t);
+                ofVec2f interpolatedNormal = bezierLine.getNormalAtIndexInterpolated(i + t);
                 
                 points.push_back(interpolatedPoint);
                 tangents.push_back(interpolatedTangent);
