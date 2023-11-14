@@ -166,6 +166,7 @@ private:
     void generateTubeMeshFromPolyline();
     int tubeResolution = 10;
     float tubeRadius = 10.0;
+    void addHemisphericalCap(const ofVec3f& center, const ofVec3f& tangent, const ofVec3f& normal, bool isStart);
 
 };
 
