@@ -943,70 +943,174 @@ ofVboMesh ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline bezierLine){
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline bezierLine){
     if(bezierLine.size() > 1){
-        
-        tubeMesh.clear();
-        tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-        
-        float tubeCircumference = 2.0 * PI * tubeRadius;
-        
-        vector<ofVec3f> points;
-        vector<ofVec3f> tangents;
-        vector<ofVec3f> normals;
-        for (int i = 0; i < bezierLine.size(); i++) {
-            points.push_back(ofVec3f(bezierLine[i].x, bezierLine[i].y, 0));
-            
-            tangents.push_back(bezierLine.getTangentAtIndex(i));
-            normals.push_back(bezierLine.getNormalAtIndex(i));
-            
-            // Add intermediate points and tangents based on precisionMultiplier
-            for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
-                float t = float(j) / float(meshLengthPrecisionMultiplier);
-                ofVec3f interpolatedPoint = bezierLine.getPointAtIndexInterpolated(i + t);
-                ofVec2f interpolatedTangent = bezierLine.getTangentAtIndexInterpolated(i + t);
-                ofVec2f interpolatedNormal = bezierLine.getNormalAtIndexInterpolated(i + t);
-                
-                points.push_back(interpolatedPoint);
-                tangents.push_back(interpolatedTangent);
-                normals.push_back(interpolatedNormal);
-            }
-        }
-        int tubeLength = points.size();
-        vector<ofVec3f> circleVertices;
-        vector<ofVec3f> allCircleVertices;
-        
-        // Generate vertices for the circles
-        for (int i = 0; i < tubeLength; i++) {
-            const ofVec3f &p0 = points[i];
-            const ofVec3f &n0 = normals[i];
-            const ofVec3f &t0 = tangents[i];
-            
-            for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
-                float p = j / static_cast<float>(tubeResolution);
-                float a = p * 360;
-                ofVec3f v0 = n0.getRotated(a, t0) * tubeRadius + p0;
-                
-                // Calculate normals, texture coords, and colors for each vertex
-                ofVec3f normal = v0 - p0;
-                normal.normalize();
-                float u = j / static_cast<float>(tubeResolution);
-                float v = i / static_cast<float>(tubeLength);
-                
-                // Add the vertex, normal, texcoord, and color to the mesh
-                tubeMesh.addVertex(v0);
-                tubeMesh.addNormal(normal);
-                tubeMesh.addTexCoord(ofVec2f(u, v));
-                tubeMesh.addColor(colorStroke);
-                
-                if (i != tubeLength - 1) {
-                    // Connect the current circle to the next one
-                    int nextCircleIdx = (i + 1) * (tubeResolution + 1) + j;
-                    tubeMesh.addIndex(i * (tubeResolution + 1) + j); // current vertex
-                    tubeMesh.addIndex(nextCircleIdx); // corresponding vertex on the next circle
-                }
-            }
-        }
-    }
-    
+           
+           tubeMesh.clear();
+           tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
+           ofPolyline workerLine = bezierLine;
+           float tubeCircumference = 2.0 * PI * tubeRadius;
+           
+           //lets add extra points at the start and end of the line using reflection so we get good normals for the actual start and end
+           glm::vec3 firstPoint = workerLine.getVertices()[0];
+           glm::vec3 secondPoint = workerLine.getVertices()[1];
+           glm::vec3 reflectedFirst = firstPoint - (secondPoint - firstPoint);
+
+           // Reflect the second-to-last point over the last for the end of the line
+           glm::vec3 lastPoint = workerLine.getVertices()[workerLine.getVertices().size() - 1];
+           glm::vec3 secondLastPoint = workerLine.getVertices()[workerLine.getVertices().size() - 2];
+           glm::vec3 reflectedLast = lastPoint - (secondLastPoint - lastPoint);
+           
+           //add the firstPoint to the start of the line
+           workerLine.insertVertex(reflectedFirst, 0);
+           workerLine.addVertex(reflectedLast);
+           
+           vector<ofVec3f> points;
+           vector<ofVec3f> tangents;
+           vector<ofVec3f> normals;
+           
+           for (int i = 1; i < workerLine.size() - 1; i++) {
+               points.push_back(ofVec3f(workerLine[i].x, workerLine[i].y, 0));
+               
+               tangents.push_back(workerLine.getTangentAtIndex(i));
+               normals.push_back(workerLine.getNormalAtIndex(i));
+               
+               // Add intermediate points and tangents based on precisionMultiplier
+               if (i < workerLine.size() - 2 ) {
+                   
+                   for (int j = 1; j < meshLengthPrecisionMultiplier; j++) {
+                       float t = float(j) / float(meshLengthPrecisionMultiplier);
+                       ofVec3f interpolatedPoint = workerLine.getPointAtIndexInterpolated(i + t);
+                       ofVec2f interpolatedTangent = workerLine.getTangentAtIndexInterpolated(i + t);
+                       ofVec2f interpolatedNormal = workerLine.getNormalAtIndexInterpolated(i + t);
+                       
+                       points.push_back(interpolatedPoint);
+                       tangents.push_back(interpolatedTangent);
+                       normals.push_back(interpolatedNormal);
+                   }
+               }
+           }
+           
+           int tubeLength = points.size();
+           
+           vector<vector<ofVec3f>> allCircles;
+           vector<vector<ofVec3f>> allCircleNormals;
+           vector<vector<ofVec2f>> allCircleTexCoords;
+           //
+           bool roundCap = false;
+         
+           if(!roundCap){
+               //we make one circle with a 0 radius but the same centre point as the start point (this is a cluster of values areound the start make the normals and uv opints as well
+               vector<ofVec3f> circleVertices;
+               vector<ofVec3f> circleNormals;
+               vector<ofVec2f> circleTexCoords;
+               const ofVec3f &p0 = points[0];
+               const ofVec3f &n0 = normals[0];
+               const ofVec3f &t0 = tangents[0];
+               for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
+                   float p = j / static_cast<float>(tubeResolution);
+                   float a = p * 360;
+                   ofVec3f v0 = n0.getRotated(a, t0) * 0 + p0;
+                   circleVertices.push_back(v0);
+
+                   ofVec3f normal = v0 - p0;
+                   normal.normalize();
+                   circleNormals.push_back(normal);
+
+                   ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeLength);
+                   circleTexCoords.push_back(texCoord);
+               }
+               for(int i = 0; i < circleVertices.size(); i++){
+                   cout << "circleVertices[" << i << "] = " << circleVertices[i] << endl;
+               }
+               allCircles.push_back(circleVertices);
+               allCircleNormals.push_back(circleNormals);
+               allCircleTexCoords.push_back(circleTexCoords);
+               
+               
+           }
+           // Generate vertices for the circles
+           for (int i = 0; i < tubeLength; i++) {
+               const ofVec3f &p0 = points[i];
+               const ofVec3f &n0 = normals[i];
+               const ofVec3f &t0 = tangents[i];
+               
+               vector<ofVec3f> circleVertices;
+               vector<ofVec3f> circleNormals;
+               vector<ofVec2f> circleTexCoords;
+
+               for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
+                   float p = j / static_cast<float>(tubeResolution);
+                   float a = p * 360;
+                   ofVec3f v0 = n0.getRotated(a, t0) * tubeRadius + p0;
+                   circleVertices.push_back(v0);
+
+                   ofVec3f normal = v0 - p0;
+                   normal.normalize();
+                   circleNormals.push_back(normal);
+
+                   ofVec2f texCoord(a / 360.0, static_cast<float>(i) / tubeLength);
+                   circleTexCoords.push_back(texCoord);
+               }
+               
+               allCircles.push_back(circleVertices);
+               allCircleNormals.push_back(circleNormals);
+               allCircleTexCoords.push_back(circleTexCoords);
+           
+           }
+         
+           if(!roundCap){
+               //we make one circle with a 0 radius but the same centre point as the start point (this is a cluster of values areound the start make the normals and uv opints as well
+               vector<ofVec3f> circleVertices;
+               vector<ofVec3f> circleNormals;
+               vector<ofVec2f> circleTexCoords;
+               const ofVec3f &p0 = points[points.size()-1];
+               const ofVec3f &n0 = normals[normals.size()-1];
+               const ofVec3f &t0 = tangents[tangents.size()-1];
+               for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
+                   float p = j / static_cast<float>(tubeResolution);
+                   float a = p * 360;
+                   ofVec3f v0 = n0.getRotated(a, t0) * 0 + p0;
+                   circleVertices.push_back(v0);
+
+                   ofVec3f normal = v0 - p0;
+                   normal.normalize();
+                   circleNormals.push_back(normal);
+
+                   ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeLength);
+                   circleTexCoords.push_back(texCoord);
+               }
+               for(int i = 0; i < circleVertices.size(); i++){
+                   cout << "circleVertices[" << i << "] = " << circleVertices[i] << endl;
+               }
+               allCircles.push_back(circleVertices);
+               allCircleNormals.push_back(circleNormals);
+               allCircleTexCoords.push_back(circleTexCoords);
+               
+           }
+           
+           //go through the circles and build the mesh
+           for (int i = 0; i < allCircles.size() - 1; i++) {
+               const vector<ofVec3f>& circle1 = allCircles[i];
+               const vector<ofVec3f>& circle2 = allCircles[i + 1];
+               const vector<ofVec3f>& normals1 = allCircleNormals[i];
+               const vector<ofVec3f>& normals2 = allCircleNormals[i + 1];
+
+               const vector<ofVec2f>& texCoords1 = allCircleTexCoords[i];
+               const vector<ofVec2f>& texCoords2 = allCircleTexCoords[i + 1];
+
+
+               for (int j = 0; j < circle1.size(); j++) {
+                   
+                   // Add two vertices at a time: one from the current circle, one from the next
+                   tubeMesh.addVertex(circle1[j]);
+                   tubeMesh.addVertex(circle2[j]);
+                   tubeMesh.addNormal(normals1[j]);
+                   tubeMesh.addNormal(normals2[j]);
+                   tubeMesh.addTexCoord(texCoords1[j]);
+                   tubeMesh.addTexCoord(texCoords2[j]);
+               }
+           }
+           
+       }
 }
 
 void ofxBezierEditor::setColorFill(ofColor c){
