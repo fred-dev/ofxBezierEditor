@@ -66,10 +66,10 @@
             }
         ],
         "fill": true,
-        "meshLengthPrecision": 4,
-        "ribbonWidth": 20.0,
-        "tubeRadius": 15.0,
-        "tubeResolution": 50,
+        "meshLengthPrecision": 1,
+        "ribbonWidth": 10.0,
+        "tubeRadius": 10.0,
+        "tubeResolution": 10,
         "useRibbonMesh": true,
         "useTubeMesh": true,
         "vertices": [

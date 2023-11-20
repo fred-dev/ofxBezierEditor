@@ -813,7 +813,7 @@ void ofxBezierEditor::generateTriangleStripFromPolyline(ofPolyline inPoly) {
         //add the firstPoint to the start of the line
         workerLine.insertVertex(reflectedFirst, 0);
         workerLine.addVertex(reflectedLast);
-
+        
         // Create vectors to store points and tangents
         vector<ofVec3f> points;
         vector<ofVec2f> tangents;
@@ -835,30 +835,29 @@ void ofxBezierEditor::generateTriangleStripFromPolyline(ofPolyline inPoly) {
             
         }
         std::vector<float> segmentDistances;
-        segmentDistances.push_back(0);
+        
         float totalLineLength = 0;
-
+        
         if(roundCap){
-            totalLineLength += tubeRadius;
-            
-            segmentDistances.push_back(tubeRadius);
+            segmentDistances.push_back(ribbonWidth/2);
+            totalLineLength +=  ribbonWidth;
+        }
+        else{
+            segmentDistances.push_back(0);
         }
         
         //get the distance between each point on the line
         for(int i = 0; i < points.size()-1; i++){
             float distance = points[i].distance(points[i+1]);
-            segmentDistances.push_back(distance);
-            totalLineLength += distance;
-        }
-        if(roundCap){
-            totalLineLength += tubeRadius;
             
-            segmentDistances.push_back(tubeRadius);
+            segmentDistances.push_back(distance + segmentDistances.back());
+            
+            totalLineLength += distance;
         }
         
         if(roundCap){
             //get the poiunts on a hald circle for the cap, the circle centre is the first point and the direction is the tangent. There should be 20 pounts on the half circle.
-            generateCurvedRibbonCap(points[0], tangents[0], true);
+            generateCurvedRibbonCap(points[0], tangents[0], true, totalLineLength);
         }
         
         for (int i = 0; i < points.size(); i++) {
@@ -873,16 +872,83 @@ void ofxBezierEditor::generateTriangleStripFromPolyline(ofPolyline inPoly) {
             
             // Add vertices to the mesh in a zigzag manner, suitable for a triangle strip
             ribbonMesh.addVertex(leftVertex); // Add left vertex
+            ribbonMesh.addTexCoord(ofVec2f(0, segmentDistances[i] / totalLineLength)); // Add left texture coordinate
             ribbonMesh.addVertex(rightVertex); // Add right vertex
+            ribbonMesh.addTexCoord(ofVec2f(1, segmentDistances[i] / totalLineLength)); // Add left texture coordinate
         }
         
         if(roundCap){
             //get the poiunts on a hald circle for the cap, the circle centre is the first point and the direction is the tangent. There should be 20 pounts on the half circle.
-            generateCurvedRibbonCap(points[points.size()-1], tangents[tangents.size()-1], false);
+            generateCurvedRibbonCap(points[points.size()-1], tangents[tangents.size()-1], false, totalLineLength);
         }
     }
 }
 
+void ofxBezierEditor::generateCurvedRibbonCap(ofVec3f centre,  ofVec3f tangent, bool forwards, float totalLineLength){
+    // Number of points to create the half circle
+    const int numPointsHalfCircle = 20;
+    float angleStep = 180.0f / numPointsHalfCircle; // Half circle so we step through 180 degrees
+    
+    ofVec3f circleCenter = centre;
+    ofVec2f circleTangent = tangent.normalize(); // Ensure the tangent is normalized
+    
+    // Calculate the normal to the tangent
+    ofVec2f circleNormal(-circleTangent.y, circleTangent.x); // Perpendicular to the tangent
+    
+    std::vector<ofVec3f> halfCirclePoints;
+    float textureCoordX = 0.5;
+    float textureCoordY = 0; // Top of the curve
+    for(int i = 0; i <= numPointsHalfCircle; ++i) {
+        float angle;
+        if(forwards){
+            angle = ofDegToRad(90 + angleStep * i); // Start from -90 degrees to make a semicircle
+            //cout << "forwards angle: " << ofRadToDeg(angle) << endl;
+        }
+        else{
+            angle = ofDegToRad(angleStep * i - 90); // Start from -90 degrees to make a semicircle
+            //cout << "backwards angle: " << ofRadToDeg(angle) << endl;
+            
+        }
+        
+        // Calculate the point on the circle using cosine and sine for the respective axes
+        ofVec3f circlePoint = circleCenter + circleTangent * cos(angle) * (ribbonWidth * 0.5) + circleNormal * sin(angle) * (ribbonWidth * 0.5);
+        
+        
+        // Add the calculated point to the half circle points vector
+        ribbonMesh.addVertex(circlePoint);
+        ribbonMesh.addVertex(circleCenter);
+        
+        
+        // Now calculate distances relative to the equator
+        float distanceToEquator = ribbonWidth * 0.5  * 0.5  + ((ribbonWidth * 0.5  * 0.5) * sin(angle));
+        float distanceToEquatorPerp = abs((ribbonWidth * 0.5) * cos(angle));
+        
+        
+        float texCoordX = distanceToEquator / (ribbonWidth * 0.5); // Normalize between 0 and 1
+        
+        float texCoordY;
+        if(forwards){
+            texCoordY  = (ribbonWidth / 2 - distanceToEquatorPerp)/totalLineLength; // Normalize angle between 0 and 1
+            
+        }
+        else{
+            texCoordY  = (distanceToEquatorPerp + (totalLineLength - ribbonWidth/2)) /totalLineLength; // Normalize angle between 0 and 1
+        }
+        
+        // Add texture coordinates for the semicircle point
+        ribbonMesh.addTexCoord(ofVec2f(texCoordX, texCoordY));
+        
+        //the next texCoord is always the circle centre, this is easy to find
+        if(forwards){
+            ribbonMesh.addTexCoord(ofVec2f(0.5, (ribbonWidth/2) /totalLineLength));
+            
+        }
+        else{
+            ribbonMesh.addTexCoord(ofVec2f(0.5, (totalLineLength - (ribbonWidth/2)) /totalLineLength));
+            
+        }
+    }
+}
 
 void ofxBezierEditor::updateAllFromVertices(){
     
@@ -928,10 +994,6 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline inPoly){
         vector<ofVec3f> tangents;
         vector<ofVec3f> normals;
         
-        
-        
-        
-        
         for (int i = 1; i < workerLine.size() - 1; i++) {
             points.push_back(ofVec3f(workerLine[i].x, workerLine[i].y, 0));
             
@@ -955,38 +1017,34 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline inPoly){
         }
         
         std::vector<float> segmentDistances;
-        segmentDistances.push_back(0);
+        
         float totalLineLength = 0;
-
-        if(roundCap){
-            totalLineLength += tubeRadius;
-            
-            segmentDistances.push_back(tubeRadius);
-        }
+        
+        
+        segmentDistances.push_back(tubeRadius);
+        totalLineLength +=  tubeRadius * 2;
+        
+        
         
         //get the distance between each point on the line
         for(int i = 0; i < points.size()-1; i++){
             float distance = points[i].distance(points[i+1]);
-            segmentDistances.push_back(distance);
+            
+            segmentDistances.push_back(distance + segmentDistances.back());
+            
             totalLineLength += distance;
         }
-        if(roundCap){
-            totalLineLength += tubeRadius;
-            
-            segmentDistances.push_back(tubeRadius);
-        }
-        
         
         vector<vector<ofVec3f>> allCircles;
         vector<vector<ofVec3f>> allCircleNormals;
         vector<vector<ofVec2f>> allCircleTexCoords;
-    
+        
         
         if(roundCap){
-            generateCurvedTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[0], tangents[0], normals[0], true);
+            generateCurvedTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[0], tangents[0], normals[0], true, totalLineLength);
         }
         if(!roundCap){
-            generateFlatTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[0], tangents[0], normals[0], true);
+            generateFlatTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[0], tangents[0], normals[0], true, totalLineLength);
         }
         
         
@@ -1010,8 +1068,11 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline inPoly){
                 normal.normalize();
                 circleNormals.push_back(normal);
                 
-                ofVec2f texCoord(a / 360.0, static_cast<float>(i) / points.size());
+                ofVec2f texCoord(a / 360.0, segmentDistances[i] / totalLineLength);
                 circleTexCoords.push_back(texCoord);
+                
+                
+                
             }
             
             allCircles.push_back(circleVertices);
@@ -1020,11 +1081,11 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline inPoly){
             
         }
         if(roundCap){
-            generateCurvedTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[points.size()-1], tangents[tangents.size()-1], normals[normals.size()-1], false);
-
+            generateCurvedTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[points.size()-1], tangents[tangents.size()-1], normals[normals.size()-1], false, totalLineLength);
+            
         }
         if(!roundCap){
-            generateFlatTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[points.size()-1], tangents[tangents.size()-1], normals[normals.size()-1], false);
+            generateFlatTubeCap(allCircles, allCircleNormals, allCircleTexCoords, points[points.size()-1], tangents[tangents.size()-1], normals[normals.size()-1], false, totalLineLength);
         }
         
         
@@ -1090,53 +1151,19 @@ void ofxBezierEditor::setColorStrokeA(float a){
     colorStroke.a = a;
 }
 
-void ofxBezierEditor::generateCurvedRibbonCap(ofVec3f centre,  ofVec3f tangent, bool forwards){
-    // Number of points to create the half circle
-      const int numPointsHalfCircle = 20;
-      float angleStep = 180.0f / numPointsHalfCircle; // Half circle so we step through 180 degrees
-
-      ofVec3f circleCenter = centre;
-      ofVec2f circleTangent = tangent.normalize(); // Ensure the tangent is normalized
-
-      // Calculate the normal to the tangent
-      ofVec2f circleNormal(-circleTangent.y, circleTangent.x); // Perpendicular to the tangent
-
-      std::vector<ofVec3f> halfCirclePoints;
-
-      for(int i = 0; i <= numPointsHalfCircle; ++i) {
-          float angle;
-          if(forwards){
-            angle = ofDegToRad(90 + angleStep * i); // Start from -90 degrees to make a semicircle
-
-          }
-          else{
-            angle = ofDegToRad(angleStep * i - 90); // Start from -90 degrees to make a semicircle
-
-          }
-
-          // Calculate the point on the circle using cosine and sine for the respective axes
-          ofVec3f circlePoint = circleCenter + circleTangent * cos(angle) * (ribbonWidth * 0.5) +
-                                              circleNormal * sin(angle) * (ribbonWidth * 0.5);
-
-          // Add the calculated point to the half circle points vector
-          ribbonMesh.addVertex(circlePoint);
-          ribbonMesh.addVertex(circleCenter);
-
-      }
-}
 
 void ofxBezierEditor::generateCurvedTubeCap(vector<vector<ofVec3f>>& allCircles,
-                                  vector<vector<ofVec3f>>& allCircleNormals,
-                                  vector<vector<ofVec2f>>& allCircleTexCoords,
-                                  const ofVec3f& centre,
-                                  const ofVec3f& tangent,
-                                  const ofVec3f& normal, bool forwards) {
+                                            vector<vector<ofVec3f>>& allCircleNormals,
+                                            vector<vector<ofVec2f>>& allCircleTexCoords,
+                                            const ofVec3f& centre,
+                                            const ofVec3f& tangent,
+                                            const ofVec3f& normal, bool forwards, float _totalLineLength) {
     float step = tubeRadius / (tubeResolution + 1);
     ofVec3f poleCenter;
     if(forwards){
         poleCenter = centre - tangent * tubeRadius;
-
-        addRing(allCircles, allCircleNormals, allCircleTexCoords, poleCenter, 0, tangent, normal, centre);
+        
+        addRing(allCircles, allCircleNormals, allCircleTexCoords, poleCenter, 0, tangent, normal, centre, 0,_totalLineLength);
         // Loop to generate each ring, starting from the one closest to the equator and moving towards the pole
         for (int i = tubeResolution; i >= 1; i--) {
             // Calculate the vertical distance from the center to the current ring
@@ -1145,19 +1172,19 @@ void ofxBezierEditor::generateCurvedTubeCap(vector<vector<ofVec3f>>& allCircles,
             float ringDistance = tubeRadius * cos(asin(verticalDistance / tubeRadius));
             // Calculate the ring center point
             ofVec3f ringCenter = centre - tangent * verticalDistance;
-
+            
             // Calculate the ring radius
             float ringRadius = sqrt(tubeRadius * tubeRadius - verticalDistance * verticalDistance);
             
             // Add the calculated ring to the vectors
-            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre);
+            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre, tubeRadius - verticalDistance,_totalLineLength );
         }
     }
     
-
+    
     // Add the special ring at the pole with zero radius
     // The center of this ring is the point on the hemisphere's surface directly above the sphere's center
-   
+    
     if(!forwards){
         
         for (int i = 1; i <= tubeResolution; i++) {
@@ -1167,26 +1194,26 @@ void ofxBezierEditor::generateCurvedTubeCap(vector<vector<ofVec3f>>& allCircles,
             float ringDistance = tubeRadius * cos(asin(verticalDistance / tubeRadius));
             // Calculate the ring center point
             ofVec3f ringCenter = centre + tangent * verticalDistance;
-
+            
             // Calculate the ring radius
             float ringRadius = sqrt(tubeRadius * tubeRadius - verticalDistance * verticalDistance);
             
             // Add the calculated ring to the vectors
-            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre);
+            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre,  (_totalLineLength - tubeRadius) + verticalDistance, _totalLineLength );
         }
         ofVec3f southPoleCenter = centre + tangent * tubeRadius;
-        addRing(allCircles, allCircleNormals, allCircleTexCoords, southPoleCenter, 0, tangent, normal, centre);
+        addRing(allCircles, allCircleNormals, allCircleTexCoords, southPoleCenter, 0, tangent, normal, centre , _totalLineLength,_totalLineLength);
     }
     
 }
 
 void ofxBezierEditor::generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
-                                  vector<vector<ofVec3f>>& allCircleNormals,
-                                  vector<vector<ofVec2f>>& allCircleTexCoords,
-                                  const ofVec3f& flatCapCentre,
-                                  const ofVec3f& tangent,
-                                  const ofVec3f& normal, bool forwards) {
-
+                                          vector<vector<ofVec3f>>& allCircleNormals,
+                                          vector<vector<ofVec2f>>& allCircleTexCoords,
+                                          const ofVec3f& flatCapCentre,
+                                          const ofVec3f& tangent,
+                                          const ofVec3f& normal, bool forwards, float _totalLineLength) {
+    
     if(forwards){
         for(int i = 0; i < tubeResolution; i++){
             
@@ -1206,7 +1233,7 @@ void ofxBezierEditor::generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
                 normal.normalize();
                 circleNormals.push_back(normal);
                 
-                ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeRadius);
+                ofVec2f texCoord(a / 360.0, ringRadius / _totalLineLength);
                 circleTexCoords.push_back(texCoord);
             }
             
@@ -1234,7 +1261,7 @@ void ofxBezierEditor::generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
                 normal.normalize();
                 circleNormals.push_back(normal);
                 
-                ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeRadius);
+                ofVec2f texCoord(a / 360.0, (ringRadius + (_totalLineLength - tubeRadius)) / _totalLineLength);
                 circleTexCoords.push_back(texCoord);
             }
             
@@ -1249,7 +1276,7 @@ void ofxBezierEditor::generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
 
 void ofxBezierEditor::addRing(vector<vector<ofVec3f>>& allCircles,
                               vector<vector<ofVec3f>>& allCircleNormals,
-                              vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius, const ofVec3f& tangent, const ofVec3f& normal, const ofVec3f& sphereCenter) {
+                              vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius, const ofVec3f& tangent, const ofVec3f& normal, const ofVec3f& sphereCenter, float distanceFromStart, float _totalLineLength) {
     std::vector<ofVec3f> circleVertices;
     std::vector<ofVec3f> circleNormals;
     std::vector<ofVec2f> circleTexCoords;
@@ -1259,11 +1286,11 @@ void ofxBezierEditor::addRing(vector<vector<ofVec3f>>& allCircles,
         float a = p * 360;
         ofVec3f v0 = normal.getRotated(a, tangent) * radius + ringCenter;
         circleVertices.push_back(v0);
-
+        
         ofVec3f normalAtVertex = (v0 - sphereCenter).getNormalized();
         circleNormals.push_back(normalAtVertex);
-
-        circleTexCoords.push_back(ofVec2f(p, static_cast<float>(j) / static_cast<float>(tubeResolution)));
+        
+        circleTexCoords.push_back(ofVec2f(p, distanceFromStart / _totalLineLength));
     }
     
     allCircles.push_back(circleVertices);

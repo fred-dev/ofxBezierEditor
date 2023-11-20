@@ -34,10 +34,10 @@ public:
         
     ofEasyCam cam;
     ofLight light;
-    int mode = TUBE_MESH_MODE;
     
     ofxPanel gui;
-    
+    ofParameter<int>OperationModeSlider = POLYLINE_MODE;
+
     ofParameter<bool> fillToggle;
     ofParameter<bool> closedToggle;
     ofParameter<ofColor> fillColor;
@@ -47,11 +47,13 @@ public:
     ofParameter<float> tubeRadiusSlider;
     ofParameter<int> tubePrecisionSlider;
     ofParameter<bool> useRoundCapsToggle;
+    ofParameter<bool> useTexToggle;
     ofParameter<bool> wireframeToggle;
     ofParameter<bool> drawNormalsToggle;
 
-
+    ofImage uvCheck;
     
+    void OperationModeSliderChanged(int &value);
     void fillToggleChanged(bool &value);
     void closedToggleChanged(bool &value);
     void fillColorChanged(ofColor &value);
@@ -63,7 +65,7 @@ public:
     void tubeRadiusSliderChanged(float &value);
     void tubePrecisionSliderChanged(int &value);
     void useRoundCapsToggleChanged(bool &value);
-    
+    void useTexToggleChanged(bool &value);
 
     
     

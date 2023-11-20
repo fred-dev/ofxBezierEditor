@@ -174,23 +174,20 @@ private:
     
     bool roundCap = true;
     
-    void generateCurvedRibbonCap(ofVec3f centre,  ofVec3f tangent, bool forwards);
+    void generateCurvedRibbonCap(ofVec3f centre,  ofVec3f tangent, bool forwards, float totalLineLength);
     
     void generateCurvedTubeCap(vector<vector<ofVec3f>>& allCircles,
                      vector<vector<ofVec3f>>& allCircleNormals,
-                     vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& tangent, const ofVec3f& normal, bool forwards);
+                     vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& tangent, const ofVec3f& normal, bool forwards, float _totalLineLength);
     
     
     void generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
                      vector<vector<ofVec3f>>& allCircleNormals,
-                     vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& flatCapCentre, const ofVec3f& tangent, const ofVec3f& normal, bool forwards);
+                     vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& flatCapCentre, const ofVec3f& tangent, const ofVec3f& normal, bool forwards, float _totalLineLength);
     
     void addRing(vector<vector<ofVec3f>>& allCircles,
                  vector<vector<ofVec3f>>& allCircleNormals,
-                 vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius,const ofVec3f& tangent, const ofVec3f& norma, const ofVec3f& sphereCenter);
-    
-//    std::vector<float> segmentDistances;
-//    
-//    void updateSegmentDistances(ofPolyline inPoly);
+                 vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius,const ofVec3f& tangent, const ofVec3f& norma, const ofVec3f& sphereCenter, float distanceFromStart, float _totalLineLength);
+
 };
 
