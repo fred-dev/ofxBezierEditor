@@ -34,7 +34,7 @@ public:
         
     ofEasyCam cam;
     ofLight light;
-    int mode = POLYLINE_MODE;
+    int mode = TUBE_MESH_MODE;
     
     ofxPanel gui;
     

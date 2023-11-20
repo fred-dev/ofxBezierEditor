@@ -50,7 +50,7 @@ void ofxBezierEditor::drawWithNormals(const ofPolyline& polyline) {
         ofPopMatrix();
     }
     
-    ofPopStyle(); // Restore the previous style settings
+    
 }
 
 ofxBezierEditor::~ofxBezierEditor(){
@@ -251,6 +251,8 @@ void ofxBezierEditor::draw(){
         ofEndShape(bIsClosed);
         ofPopMatrix();
     }
+    
+    ofPopStyle(); // Restore the previous style settings
     
 }
 
@@ -649,13 +651,19 @@ void ofxBezierEditor::mouseExited(ofMouseEventArgs &args){
 }
 //--------------------------------------------------------------
 void ofxBezierEditor::keyPressed(ofKeyEventArgs &args){
+    if(args.key == 'r'){
+        roundCap =! roundCap;
+        cout << "changed rotationmode: " << doRotate << endl;
+    }
     if(args.key == 'e'){
         beditBezier = !beditBezier;
     }
+    
     if(beditBezier){
         if(args.key == 's'){
             savePoints(jsonFileName);
         }
+        
         else if(args.key == 'l'){
             loadPoints(jsonFileName);
         }
@@ -869,17 +877,21 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
         tubeMesh.clear();
         tubeMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
         ofPolyline workerLine = polyLineFromPoints;
+        ofVboMesh startCap, endCap;
         float tubeCircumference = 2.0 * PI * tubeRadius;
         
         //lets add extra points at the start and end of the line using reflection so we get good normals for the actual start and end
         glm::vec3 firstPoint = workerLine.getVertices()[0];
         glm::vec3 secondPoint = workerLine.getVertices()[1];
         glm::vec3 reflectedFirst = firstPoint - (secondPoint - firstPoint);
+        startPoint = firstPoint;
         
         // Reflect the second-to-last point over the last for the end of the line
         glm::vec3 lastPoint = workerLine.getVertices()[workerLine.getVertices().size() - 1];
         glm::vec3 secondLastPoint = workerLine.getVertices()[workerLine.getVertices().size() - 2];
         glm::vec3 reflectedLast = lastPoint - (secondLastPoint - lastPoint);
+        endPoint = lastPoint;
+        
         
         //add the firstPoint to the start of the line
         workerLine.insertVertex(reflectedFirst, 0);
@@ -910,47 +922,21 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
                 }
             }
         }
-        vector<ofVec3f> startCapPoints = getCapPoints(workerLine.getVertices()[0], workerLine.getVertices()[1], tubeRadius, tubeResolution);
-        vector<ofVec3f> endCapPoints = getCapPoints(workerLine.getVertices()[workerLine.getVertices().size()-2], workerLine.getVertices()[workerLine.getVertices().size()-1], tubeRadius, tubeResolution);
         
         int tubeLength = points.size();
         
         vector<vector<ofVec3f>> allCircles;
         vector<vector<ofVec3f>> allCircleNormals;
         vector<vector<ofVec2f>> allCircleTexCoords;
-        //
-        bool roundCap = true;
+    
+        
         if(roundCap){
-            for(int i = 0; i < startCapPoints.size() ; i++){
-                vector<ofVec3f> circleVertices;
-                vector<ofVec3f> circleNormals;
-                vector<ofVec2f> circleTexCoords;
-                float latitudeAngle = ofMap(i, 0, startCapPoints.size()-1 ,-90, 0);
-                // Calculate the radius of this ring
-                float sphereRadiusNew = tubeRadius * sin(ofDegToRad(latitudeAngle));
-                cout << "sphereRadiusNew: " << i << " " << sphereRadiusNew << "sphere radius: " << tubeRadius << endl;
-                
-                for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
-                    float p = j / static_cast<float>(tubeResolution);
-                    float a = p * 360;
-                    ofVec3f v0 = normals[0].getRotated(a, tangents[0]) * sphereRadiusNew + startCapPoints[i];
-                    circleVertices.push_back(v0);
-                    
-                    ofVec3f normal = v0 - startCapPoints[i];
-                    normal.normalize();
-                    circleNormals.push_back(normal);
-                    
-                    ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeLength);
-                    circleTexCoords.push_back(texCoord);
-                    //we make a ciricle of points for reach resolultion with increasing radiuses starting at 0 - these need to be shifted back from the starting point the correct amount. make the normals and uv points as well
-                }
-                allCircles.push_back(circleVertices);
-                allCircleNormals.push_back(circleNormals);
-                allCircleTexCoords.push_back(circleTexCoords);
-            }
+            
+            generateCap(allCircles, allCircleNormals, allCircleTexCoords, points[0], tangents[0], normals[0], true);
+            
         }
         if(!roundCap){
-            //we make one circle with a 0 radius but the same centre point as the start point (this is a cluster of values areound the start make the normals and uv opints as well
+            //            //we make one circle with a 0 radius but the same centre point as the start point (this is a cluster of values areound the start make the normals and uv opints as well
             vector<ofVec3f> circleVertices;
             vector<ofVec3f> circleNormals;
             vector<ofVec2f> circleTexCoords;
@@ -965,7 +951,7 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
                 
                 ofVec3f normal = v0 - p0;
                 normal.normalize();
-                circleNormals.push_back(normal);
+                circleNormals.push_back(t0);
                 
                 ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeLength);
                 circleTexCoords.push_back(texCoord);
@@ -977,8 +963,9 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
             allCircleNormals.push_back(circleNormals);
             allCircleTexCoords.push_back(circleTexCoords);
             
-            
         }
+        
+        
         // Generate vertices for the circles
         for (int i = 0; i < tubeLength; i++) {
             const ofVec3f &p0 = points[i];
@@ -1008,12 +995,9 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
             allCircleTexCoords.push_back(circleTexCoords);
             
         }
-        //make cap
-        //make a hemisphere around the first point
-        
         if(roundCap){
-            
-            
+            generateCap(allCircles, allCircleNormals, allCircleTexCoords, points[points.size()-1], tangents[tangents.size()-1], normals[normals.size()-1], false);
+
         }
         if(!roundCap){
             //we make one circle with a 0 radius but the same centre point as the start point (this is a cluster of values areound the start make the normals and uv opints as well
@@ -1029,22 +1013,19 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
                 ofVec3f v0 = n0.getRotated(a, t0) * 0 + p0;
                 circleVertices.push_back(v0);
                 
-                ofVec3f normal = v0 - p0;
+                ofVec3f normal = t0;
                 normal.normalize();
                 circleNormals.push_back(normal);
                 
                 ofVec2f texCoord(a / 360.0, static_cast<float>(0) / tubeLength);
                 circleTexCoords.push_back(texCoord);
             }
-            for(int i = 0; i < circleVertices.size(); i++){
-                cout << "circleVertices[" << i << "] = " << circleVertices[i] << endl;
-            }
+            
             allCircles.push_back(circleVertices);
             allCircleNormals.push_back(circleNormals);
             allCircleTexCoords.push_back(circleTexCoords);
             
         }
-        
         //go through the circles and build the mesh
         for (int i = 0; i < allCircles.size() - 1; i++) {
             const vector<ofVec3f>& circle1 = allCircles[i];
@@ -1067,10 +1048,6 @@ void ofxBezierEditor::generateTubeMeshFromPolyline(){
                 tubeMesh.addTexCoord(texCoords2[j]);
             }
         }
-        
-        //addHemisphericalCap(points[points.size()-1], tangents[points.size()-1], normals[points.size()-1], false);
-        
-        
     }
 }
 
@@ -1112,18 +1089,82 @@ void ofxBezierEditor::setColorStrokeA(float a){
 }
 
 
+void ofxBezierEditor::generateCap(vector<vector<ofVec3f>>& allCircles,
+                                  vector<vector<ofVec3f>>& allCircleNormals,
+                                  vector<vector<ofVec2f>>& allCircleTexCoords,
+                                  const ofVec3f& centre,
+                                  const ofVec3f& tangent,
+                                  const ofVec3f& normal, bool forwards) {
+    float step = tubeRadius / (tubeResolution + 1);
+    ofVec3f poleCenter;
+    if(forwards){
+        poleCenter = centre - tangent * tubeRadius;
 
-vector<ofVec3f> ofxBezierEditor::getCapPoints(  ofVec3f startPoint,ofVec3f endPoint,float dist, int numPoints) {
-    vector<ofVec3f> points;
-    ofVec3f direction = startPoint - endPoint;
-    direction.normalize();
-    
-    float segmentLength = dist / numPoints;
-    for (int i = 1; i < numPoints; i++) {
-        ofVec3f newPoint = startPoint - direction * segmentLength * (i + 1) ;
-        points.push_back(newPoint);
+        addRing(allCircles, allCircleNormals, allCircleTexCoords, poleCenter, 0, tangent, normal, centre);
+        // Loop to generate each ring, starting from the one closest to the equator and moving towards the pole
+        for (int i = tubeResolution; i >= 1; i--) {
+            // Calculate the vertical distance from the center to the current ring
+            float verticalDistance = step * i;
+            // Calculate the actual distance from the sphere center to the ring center on the surface of the hemisphere
+            float ringDistance = tubeRadius * cos(asin(verticalDistance / tubeRadius));
+            // Calculate the ring center point
+            ofVec3f ringCenter = centre - tangent * verticalDistance;
+
+            // Calculate the ring radius
+            float ringRadius = sqrt(tubeRadius * tubeRadius - verticalDistance * verticalDistance);
+            
+            // Add the calculated ring to the vectors
+            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre);
+        }
     }
-    //std::reverse(points.begin(), points.end());
+    
 
-    return points;
+    // Add the special ring at the pole with zero radius
+    // The center of this ring is the point on the hemisphere's surface directly above the sphere's center
+   
+    if(!forwards){
+        
+        for (int i = 1; i <= tubeResolution; i++) {
+            // Calculate the vertical distance from the center to the current ring
+            float verticalDistance = step * i;
+            // Calculate the actual distance from the sphere center to the ring center on the surface of the hemisphere
+            float ringDistance = tubeRadius * cos(asin(verticalDistance / tubeRadius));
+            // Calculate the ring center point
+            ofVec3f ringCenter = centre + tangent * verticalDistance;
+
+            // Calculate the ring radius
+            float ringRadius = sqrt(tubeRadius * tubeRadius - verticalDistance * verticalDistance);
+            
+            // Add the calculated ring to the vectors
+            addRing(allCircles, allCircleNormals, allCircleTexCoords, ringCenter, ringRadius, tangent, normal, centre);
+        }
+        ofVec3f southPoleCenter = centre + tangent * tubeRadius;
+        addRing(allCircles, allCircleNormals, allCircleTexCoords, southPoleCenter, 0, tangent, normal, centre);
+    }
+    
 }
+
+void ofxBezierEditor::addRing(vector<vector<ofVec3f>>& allCircles,
+                              vector<vector<ofVec3f>>& allCircleNormals,
+                              vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius, const ofVec3f& tangent, const ofVec3f& normal, const ofVec3f& sphereCenter) {
+    std::vector<ofVec3f> circleVertices;
+    std::vector<ofVec3f> circleNormals;
+    std::vector<ofVec2f> circleTexCoords;
+    
+    for (int j = 0; j <= tubeResolution; j++) { // Use <= to include the last point in the circle
+        float p = j / static_cast<float>(tubeResolution);
+        float a = p * 360;
+        ofVec3f v0 = normal.getRotated(a, tangent) * radius + ringCenter;
+        circleVertices.push_back(v0);
+
+        ofVec3f normalAtVertex = (v0 - sphereCenter).getNormalized();
+        circleNormals.push_back(normalAtVertex);
+
+        circleTexCoords.push_back(ofVec2f(p, static_cast<float>(j) / static_cast<float>(tubeResolution)));
+    }
+    
+    allCircles.push_back(circleVertices);
+    allCircleNormals.push_back(circleNormals);
+    allCircleTexCoords.push_back(circleTexCoords);
+}
+

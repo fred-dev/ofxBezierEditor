@@ -167,6 +167,18 @@ private:
     int tubeResolution = 10;
     float tubeRadius = 10.0;
     vector<ofVec3f> getCapPoints(ofVec3f startPoint, ofVec3f endPoint, float dist, int numPoints);
+    ofVboMesh createHemisphereMesh(const ofVec3f& point1, const ofVec3f& point2, const ofVec3f& center, float radius, bool direction);
+    bool doRotate;
+    ofVec3f startPoint, endPoint;
+    void createLatitudeRings(vector<vector<ofVec3f>>& allCircles, vector<vector<ofVec3f>>& allCircleNormals, vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& extension, float tubeResolution, float tubeRadius,bool forwards);
+    bool roundCap = true;
+    
+    void generateCap(vector<vector<ofVec3f>>& allCircles,
+                     vector<vector<ofVec3f>>& allCircleNormals,
+                     vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& tangent, const ofVec3f& normal, bool forwards);
 
+    void addRing(vector<vector<ofVec3f>>& allCircles,
+                 vector<vector<ofVec3f>>& allCircleNormals,
+                 vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius,const ofVec3f& tangent, const ofVec3f& norma, const ofVec3f& sphereCenter);
 };
 
