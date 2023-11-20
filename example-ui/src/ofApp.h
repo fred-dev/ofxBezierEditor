@@ -28,26 +28,32 @@ public:
     void gotMessage(ofMessage msg);
     void exit();
     
-    ofxBranchesPrimitive tube;
+    
     ofxBezierEditor myBezier;
     bool bdrawBezierInfo;
         
     ofEasyCam cam;
     ofLight light;
-    int mode = POLYLINE_MODE;
     
     ofxPanel gui;
-    
+    ofParameter<int>OperationModeSlider = POLYLINE_MODE;
+
     ofParameter<bool> fillToggle;
     ofParameter<bool> closedToggle;
     ofParameter<ofColor> fillColor;
     ofParameter<ofColor> strokeColor;
     ofParameter<float> ribbonWidthSlider;
-    ofParameter<int> ribbonPrecisionSlider;
+    ofParameter<int> meshLengthPrecisionSlider;
     ofParameter<float> tubeRadiusSlider;
     ofParameter<int> tubePrecisionSlider;
+    ofParameter<bool> useRoundCapsToggle;
+    ofParameter<bool> useTexToggle;
+    ofParameter<bool> wireframeToggle;
+    ofParameter<bool> drawNormalsToggle;
 
+    ofImage uvCheck;
     
+    void OperationModeSliderChanged(int &value);
     void fillToggleChanged(bool &value);
     void closedToggleChanged(bool &value);
     void fillColorChanged(ofColor &value);
@@ -55,11 +61,10 @@ public:
     
     void ribbonWidthSliderChanged(float &value);
     void ribbonWidthSliderChnaged(float &value);
-    void ribbonPrecisionSliderChanged(int &value);
+    void meshLengthPrecisionSliderChanged(int &value);
     void tubeRadiusSliderChanged(float &value);
     void tubePrecisionSliderChanged(int &value);
-    
+    void useRoundCapsToggleChanged(bool &value);
+    void useTexToggleChanged(bool &value);
 
-    
-    
 };

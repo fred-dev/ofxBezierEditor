@@ -15,13 +15,13 @@ public:
 };
 
 class ofxBezierEditor {
-
+    
 public:
     // Constructors and Destructor
     ~ofxBezierEditor();
-
+    
     ofxBezierEditor();
-
+    
 #ifdef GEO_LINE
     vector<draggableVertex> curveVerticesGeo;
     vector<draggableVertex> controlPoint1Geo;
@@ -31,24 +31,24 @@ public:
     vector<draggableVertex> curveVertices;
     vector<draggableVertex> controlPoint1;
     vector<draggableVertex> controlPoint2;
-
+    
     // File Operations
     string jsonFileName;
     void loadPoints(string filename);
     void savePoints(string filename);
-
+    
     // Getters and Setters
     int getCurrentPointToMove() { return currentPointToMove; };
     void setCurrentPointToMove(int p) { currentPointToMove = p; };
     
     int getLastVertexSelected() { return lastVertexSelected; };
     void setLastVertexSelected(int v) { lastVertexSelected = v; };
-
+    
     // Drawing Functions
     void draw();
     void drawOutline();
     void drawHelp();
-
+    
     // Mouse and Key Event Handlers
     virtual void mouseMoved(ofMouseEventArgs &args);
     virtual void mouseDragged(ofMouseEventArgs &args);
@@ -59,7 +59,7 @@ public:
     virtual void mouseExited(ofMouseEventArgs &args);
     virtual void keyPressed(ofKeyEventArgs &args);
     virtual void keyReleased(ofKeyEventArgs &args);
-
+    
     // Visual Attributes
     int getRadiusVertex() { return radiusVertex; };
     void setRadiusVertex(int r) { radiusVertex = r; };
@@ -69,7 +69,7 @@ public:
     
     bool getFillBezier() { return bfillBezier; };
     void setFillBezier(bool b) { bfillBezier = b; updateAllFromVertices();};
-
+    
     // Color Control
     void setColorFill(ofColor c);
     void setColorFill(float r, float g, float b, float a = 255.0);
@@ -87,11 +87,11 @@ public:
     
     ofColor getColorFill() { return colorFill; };
     ofColor getColorStroke() { return colorStroke; };
-
+    
     
     void setClosed(bool b) { bIsClosed = b; updateAllFromVertices(); };
     bool getClosed() { return bIsClosed; };
-
+    
     ofPoint getCenter() { return center; };
     ofPolyline getPolyline() { return polyLineFromPoints; }
     
@@ -105,7 +105,7 @@ public:
     
     ofVboMesh getTubeMesh() { return tubeMesh; };
     ofVboMesh getTubeMeshFromPolyline(ofPolyline bezierLine);
-
+    
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
     void setTubeRadius(float r) { tubeRadius = r; updateAllFromVertices();};
@@ -126,34 +126,34 @@ private:
     // Private Variables
     int currentPointToMove;
     int lastVertexSelected;
-
+    
     ofJson JSONBezier;
     ofVboMesh ribbonMesh;
     ofVboMesh tubeMesh;
     
     int radiusVertex;
     int radiusControlPoints;
-
+    
     bool bfillBezier;
     ofColor colorFill;
     ofColor colorStroke;
-
+    
     ofRectangle boundingBox;
     void updateBoundingBox();
     bool bshowBoundingBox;
-
+    
     ofPoint center;
     void calculateCenter();
-
+    
     float translateX, translateY;
     float mouseX, mouseY;
-
+    
     bool beditBezier;
     bool bIsClosed;
     bool bUseRibbonMesh = false;
     bool bUseTubeMesh = false;
     void drawWithNormals(const ofPolyline& polyline);
-
+    
     // Colors
     ofColor vertexColour;           // Bright yellow for default vertices
     ofColor vertexHoverColor;       // Semi-transparent yellow when hovering
@@ -166,20 +166,40 @@ private:
     ofColor ctrPtLabelColour;       // Slightly less intense purple for labels
     ofColor ctrPtSelectedColour;    // Bright blue for selected control points
     ofColor ctrPtDraggedColour;     // Slightly different blue for dragged control points
-
+    
     ofPolyline polyLineFromPoints;
     void updatePolyline();
     
     // Mesh Generation
     void updateAllFromVertices();
     int meshLengthPrecisionMultiplier = 1;
-    void generateTriangleStripFromPolyline(ofPolyline bezierLine);
+    void generateTriangleStripFromPolyline(ofPolyline inPoly);
     float ribbonWidth = 10.0;
-    
-    void generateTubeMeshFromPolyline(ofPolyline bezierLine);
+    ofVboMesh getRibbonMeshFromPolyline(ofPolyline inPoly);
+
+    void generateTubeMeshFromPolyline(ofPolyline inPoly);
     int tubeResolution = 10;
     float tubeRadius = 10.0;
-
-
+    
+    void createLatitudeRings(vector<vector<ofVec3f>>& allCircles, vector<vector<ofVec3f>>& allCircleNormals, vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& extension, float tubeResolution, float tubeRadius,bool forwards);
+    
+    bool roundCap = true;
+    
+    void generateCurvedRibbonCap(ofVec3f centre,  ofVec3f tangent, bool forwards, float totalLineLength);
+    
+    void generateCurvedTubeCap(vector<vector<ofVec3f>>& allCircles,
+                               vector<vector<ofVec3f>>& allCircleNormals,
+                               vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& center, const ofVec3f& tangent, const ofVec3f& normal, bool forwards, float _totalLineLength);
+    
+    
+    void generateFlatTubeCap(vector<vector<ofVec3f>>& allCircles,
+                             vector<vector<ofVec3f>>& allCircleNormals,
+                             vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& flatCapCentre, const ofVec3f& tangent, const ofVec3f& normal, bool forwards, float _totalLineLength);
+    
+    void addRing(vector<vector<ofVec3f>>& allCircles,
+                 vector<vector<ofVec3f>>& allCircleNormals,
+                 vector<vector<ofVec2f>>& allCircleTexCoords, const ofVec3f& ringCenter, float radius,const ofVec3f& tangent, const ofVec3f& norma, const ofVec3f& sphereCenter, float distanceFromStart, float _totalLineLength);
+    
+    
 };
 
