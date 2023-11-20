@@ -25,9 +25,10 @@ void ofApp::setup(){
     gui.add(ribbonWidthSlider.set("Ribbon width", 10.0, 1.0, 150.0));
     gui.add(meshLengthPrecisionSlider.set("Ribbon Precision", 5, 1, 50));
     gui.add(tubeRadiusSlider.set("Tube Radius", 10.0, 1.0, 150.0));
-    gui.add(tubePrecisionSlider.set("Tube Precision", 5, 1, 15));
+    gui.add(tubePrecisionSlider.set("Tube Precision", 10, 5, 50));
     gui.add(wireframeToggle.set("Draw wireframe", false));
     gui.add(drawNormalsToggle.set("Draw normals", false));
+    gui.add(useRoundCapsToggle.set("Use round caps", true));
     
     
     // Add listener for GUI events
@@ -39,6 +40,8 @@ void ofApp::setup(){
     meshLengthPrecisionSlider.addListener(this, &ofApp::meshLengthPrecisionSliderChanged);
     tubeRadiusSlider.addListener(this, &ofApp::tubeRadiusSliderChanged);
     tubePrecisionSlider.addListener(this, &ofApp::tubePrecisionSliderChanged);
+    useRoundCapsToggle.addListener(this, &ofApp::useRoundCapsToggleChanged);
+    
     
     gui.loadFromFile("settings.xml");
 }
@@ -60,7 +63,14 @@ void ofApp::draw(){
         
         else if(mode == FAT_LINE_MODE){
             ofSetColor(myBezier.getColorStroke());
-            myBezier.getRibbonMesh().draw();
+
+            if(wireframeToggle){
+                myBezier.getRibbonMesh().drawWireframe();
+            }
+            else{
+                myBezier.getRibbonMesh().draw();
+            }
+            
         }
         
         else if (mode == TUBE_MESH_MODE) {
@@ -209,4 +219,8 @@ void ofApp::tubeRadiusSliderChanged(float &value){
 
 void ofApp::tubePrecisionSliderChanged(int &value){
     myBezier.setTubeResolution(value);
+}
+void ofApp::useRoundCapsToggleChanged(bool &value){
+    myBezier.setHasRoundCaps(value);
+
 }

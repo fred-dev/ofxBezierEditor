@@ -46,6 +46,7 @@ public:
     ofParameter<int> meshLengthPrecisionSlider;
     ofParameter<float> tubeRadiusSlider;
     ofParameter<int> tubePrecisionSlider;
+    ofParameter<bool> useRoundCapsToggle;
     ofParameter<bool> wireframeToggle;
     ofParameter<bool> drawNormalsToggle;
 
@@ -61,6 +62,7 @@ public:
     void meshLengthPrecisionSliderChanged(int &value);
     void tubeRadiusSliderChanged(float &value);
     void tubePrecisionSliderChanged(int &value);
+    void useRoundCapsToggleChanged(bool &value);
     
 
     
