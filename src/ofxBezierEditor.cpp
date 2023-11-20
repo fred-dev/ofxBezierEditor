@@ -793,6 +793,11 @@ void ofxBezierEditor::updatePolyline(){
     }
 }
 
+ofVboMesh ofxBezierEditor::getRibbonMeshFromPolyline(ofPolyline inPoly){
+    generateTubeMeshFromPolyline(inPoly);
+    return ribbonMesh;
+}
+
 void ofxBezierEditor::generateTriangleStripFromPolyline(ofPolyline inPoly) {
     if (inPoly.getVertices().size() > 2) {
         // Clear mesh (triangle strip)
@@ -968,6 +973,11 @@ void ofxBezierEditor::updateAllFromVertices(){
         
     }
     
+}
+
+ofVboMesh ofxBezierEditor::getTubeMehsFromPolyline(ofPolyline inPoly){
+    generateTubeMeshFromPolyline(inPoly);
+    return tubeMesh;
 }
 
 void ofxBezierEditor::generateTubeMeshFromPolyline(ofPolyline inPoly){

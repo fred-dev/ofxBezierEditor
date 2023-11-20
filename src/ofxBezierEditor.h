@@ -90,6 +90,7 @@ public:
     ofPolyline getPolyline() { return polyLineFromPoints; }
     
     ofVboMesh getRibbonMesh() { return ribbonMesh; };
+    ofVboMesh getRibbonMeshFromPolyline(ofPolyline inPoly);
     bool getUseRibbonMesh() { return bUseRibbonMesh; };
     void setUseRibbonMesh(bool b) { bUseRibbonMesh = b; };
     void setMeshLengthPrecisionMultiplier(int m) { meshLengthPrecisionMultiplier = m; updateAllFromVertices();};
@@ -98,6 +99,7 @@ public:
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
     ofVboMesh getTubeMesh() { return tubeMesh; };
+    ofVboMesh getTubeMehsFromPolyline(ofPolyline inPoly);
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
     void setTubeRadius(float r) { tubeRadius = r; updateAllFromVertices();};
