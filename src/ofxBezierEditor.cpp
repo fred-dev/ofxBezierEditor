@@ -794,7 +794,7 @@ void ofxBezierEditor::updatePolyline(){
 }
 
 ofVboMesh ofxBezierEditor::getRibbonMeshFromPolyline(ofPolyline inPoly){
-    generateTubeMeshFromPolyline(inPoly);
+    generateTriangleStripFromPolyline(inPoly);
     return ribbonMesh;
 }
 
@@ -975,7 +975,7 @@ void ofxBezierEditor::updateAllFromVertices(){
     
 }
 
-ofVboMesh ofxBezierEditor::getTubeMehsFromPolyline(ofPolyline inPoly){
+ofVboMesh ofxBezierEditor::getTubeMeshFromPolyline(ofPolyline inPoly){
     generateTubeMeshFromPolyline(inPoly);
     return tubeMesh;
 }

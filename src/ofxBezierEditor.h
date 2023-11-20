@@ -99,7 +99,7 @@ public:
     void setRibbonWidth(float w) { ribbonWidth = w; updateAllFromVertices();};
     
     ofVboMesh getTubeMesh() { return tubeMesh; };
-    ofVboMesh getTubeMehsFromPolyline(ofPolyline inPoly);
+    ofVboMesh getTubeMeshFromPolyline(ofPolyline inPoly);
     void setTubeResolution(int r) { tubeResolution = r; updateAllFromVertices();};
     int getTubeResolution() { return tubeResolution; };
     void setTubeRadius(float r) { tubeRadius = r; updateAllFromVertices();};
