@@ -78,7 +78,7 @@ void ofApp::draw(){
             }
             else{
                 ofPushStyle();
-                ofSetColor(myBezier.getColorStroke());
+                ofSetColor(myBezier.getColourStroke());
                 
                 if(wireframeToggle){
                     myBezier.getRibbonMesh().drawWireframe();
@@ -113,7 +113,7 @@ void ofApp::draw(){
             }
             else{
                 ofPushStyle();
-                ofSetColor(myBezier.getColorStroke());
+                ofSetColor(myBezier.getColourStroke());
 
                 if(wireframeToggle){
                     // Draw the tube mesh
@@ -225,6 +225,7 @@ void ofApp::fillToggleChanged(bool &value){
 void ofApp::closedToggleChanged(bool &value){
     myBezier.setClosed(value);
 }
+
 
 void ofApp::ribbonWidthSliderChanged(float &value){
     myBezier.setRibbonWidth(value);
