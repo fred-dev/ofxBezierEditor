@@ -37,12 +37,18 @@ void ofxBezierRibbonMeshBuilder::generateRibbonMeshFromPolyline(ofPolyline inPol
 		ofxBezierUtility::CalculateInterpolatedTangentsAndPoints(workerLine, points, tangents, settings.meshLengthPrecisionMultiplier);
 		ofxBezierUtility::CalculateLineLengths(points, segmentDistances, totalLineLength, settings.roundCap, settings.ribbonWidth);
 
-		if(settings.roundCap){
+        if(settings.roundCap && !settings.bIsClosed){
 			//get the poiunts on a hald circle for the cap, the circle centre is the first point and the direction is the tangent. There should be 20 pounts on the half circle.
 			generateCurvedRibbonCap(points[0], tangents[0], true, totalLineLength);
 		}
-
-		for(int i = 0; i < points.size(); i++){
+        int wrapExtent;
+        if(!settings.bIsClosed){
+            wrapExtent = points.size();
+        }
+        else{
+            wrapExtent = points.size() - 1;
+        }
+		for(int i = 0; i < wrapExtent; i++){
 			// Calculate the perpendicular vector
 			ofVec2f perpendicular(-tangents[i].y, tangents[i].x); // Perpendicular vector
 			perpendicular.normalize();
@@ -60,8 +66,23 @@ void ofxBezierRibbonMeshBuilder::generateRibbonMeshFromPolyline(ofPolyline inPol
 			ribbonMesh.addTexCoord(ofVec2f(1, segmentDistances[i] / totalLineLength)); // Add left texture coordinate
 
 		}
+        
+        if(settings.bIsClosed){
+            ofVec2f perpendicular(-tangents[0].y, tangents[0].x); // Perpendicular vector
+            perpendicular.normalize();
 
-		if(settings.roundCap){
+            // Calculate the vertices for both sides
+            ofVec3f currentPoint = points[0];
+            ofVec3f leftVertex = currentPoint - perpendicular * (settings.ribbonWidth * 0.5);
+            ofVec3f rightVertex = currentPoint + perpendicular * (settings.ribbonWidth * 0.5);
+            ribbonMesh.addVertex(leftVertex); // Add left vertex
+            ribbonMesh.addTexCoord(ofVec2f(0, segmentDistances[0] / totalLineLength)); // Add left texture coordinate
+
+            ribbonMesh.addVertex(rightVertex); // Add right vertex
+            ribbonMesh.addTexCoord(ofVec2f(1, segmentDistances[0] / totalLineLength)); // Add left texture coordinate
+        }
+
+		if(settings.roundCap && !settings.bIsClosed){
 			//get the poiunts on a hald circle for the cap, the circle centre is the first point and the direction is the tangent. There should be 20 pounts on the half circle.
 			generateCurvedRibbonCap(points[points.size() - 1], tangents[tangents.size() - 1], false, totalLineLength);
 		}

@@ -62,6 +62,8 @@ class ofxBezierEditor {
 
 		ofVboMesh getTubeMesh();
 		ofVboMesh getTubeMeshFromPolyline(ofPolyline polyline);
+    
+        void createLineFromPoints(std::vector<glm::vec3> points);
 
 	private:
 

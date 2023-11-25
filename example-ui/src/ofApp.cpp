@@ -98,10 +98,6 @@ void ofApp::draw(){
             light.enable();
             ofScale(1, -1);
             ofTranslate(-ofGetWidth() / 2, -ofGetHeight() / 2);
-            ofPushStyle();
-            ofSetColor(0,255,0);
-            myBezier.draw();
-            ofPopStyle();
             if(useTexToggle){
                 ofPushStyle();
                 ofSetColor(ofColor::white);

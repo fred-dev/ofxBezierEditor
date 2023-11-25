@@ -44,10 +44,10 @@ void ofxBezierTubeMeshBuilder::generateTubeMeshFromPolyline(ofPolyline inPoly){
 		ofxBezierUtility::CalculateLineLengths(points, segmentDistances, totalLineLength, settings.roundCap, settings.tubeRadius * 2);
 
 		//We add the top cap first
-		if(settings.roundCap){
+		if(settings.roundCap && !settings.bIsClosed){
 			generateCurvedTubeCap(points[0], tangents[0], normals[0], true, totalLineLength);
 		}
-		if(!settings.roundCap){
+		if(!settings.roundCap && !settings.bIsClosed){
 			generateFlatTubeCap(points[0], tangents[0], normals[0], true, totalLineLength);
 		}
 
@@ -84,16 +84,24 @@ void ofxBezierTubeMeshBuilder::generateTubeMeshFromPolyline(ofPolyline inPoly){
 
 		}
 
-		if(settings.roundCap){
+		if(settings.roundCap && !settings.bIsClosed){
 			generateCurvedTubeCap(points[points.size() - 1], tangents[tangents.size() - 1], normals[normals.size() - 1], false, totalLineLength);
 		}
 
-		if(!settings.roundCap){
+		if(!settings.roundCap && !settings.bIsClosed){
 			generateFlatTubeCap(points[points.size() - 1], tangents[tangents.size() - 1], normals[normals.size() - 1], false, totalLineLength);
 		}
-
+        
+        int wrapExtent;
+        if(!settings.bIsClosed){
+            wrapExtent = allCircleVertices.size() - 1;
+        }
+        else{
+            wrapExtent = allCircleVertices.size() - 2;
+        }
+        
 		//go through the circles and build the mesh
-		for(int i = 0; i < allCircleVertices.size() - 1; i++){
+		for(int i = 0; i < wrapExtent; i++){
 			const vector <ofVec3f> & circle1 = allCircleVertices[i];
 			const vector <ofVec3f> & circle2 = allCircleVertices[i + 1];
 			const vector <ofVec3f> & normals1 = allCircleNormals[i];
@@ -103,6 +111,7 @@ void ofxBezierTubeMeshBuilder::generateTubeMeshFromPolyline(ofPolyline inPoly){
 			const vector <ofVec2f> & texCoords2 = allCircleTexCoords[i + 1];
 
 
+            
 			for(int j = 0; j < circle1.size(); j++){
 
 				// Add two vertices at a time: one from the current circle, one from the next
@@ -114,6 +123,16 @@ void ofxBezierTubeMeshBuilder::generateTubeMeshFromPolyline(ofPolyline inPoly){
 				tubeMesh.addTexCoord(texCoords2[j]);
 			}
 		}
+        if(settings.bIsClosed){
+            for(int j = 0; j < allCircleVertices[0].size(); j++){
+                tubeMesh.addVertex(allCircleVertices[allCircleVertices.size()-2][j]);
+                tubeMesh.addVertex(allCircleVertices[0][j]);
+                tubeMesh.addNormal(allCircleNormals[allCircleNormals.size()-2][j]);
+                tubeMesh.addNormal(allCircleNormals[0][j]);
+                tubeMesh.addTexCoord(allCircleTexCoords[allCircleTexCoords.size()-2][j]);
+                tubeMesh.addTexCoord(allCircleTexCoords[0][j]);
+            }
+        }
 	}
 }
 

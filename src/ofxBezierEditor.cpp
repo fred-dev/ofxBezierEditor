@@ -52,7 +52,22 @@ void ofxBezierEditor::updatePolyline(){
 
 	}
 }
-
+void ofxBezierEditor::createLineFromPoints(std::vector<glm::vec3> points){
+    if(points.size() > 2){
+        polyLineFromPoints.clear();
+        curveVertices->clear();
+        controlPoint1->clear();
+        controlPoint2->clear();
+        
+        for (int i = 0 ; i < points.size(); i++) {
+            curveVertices->at(i).pos = points[i];
+            controlPoint1->at(i).pos = points[i] + glm::vec3(0.5,0.5,0);
+            controlPoint2->at(i).pos = points[i] - glm::vec3(0.5,0.5,0);
+        }
+        updateAllFromVertices();
+    }
+    
+}
 
 void ofxBezierEditor::updateAllFromVertices(){
 
