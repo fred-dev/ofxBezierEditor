@@ -261,6 +261,7 @@ void ofxBezierUI::mouseExited(ofMouseEventArgs &args){
 void ofxBezierUI::keyPressed(ofKeyEventArgs &args){
     if(args.key == 'e'){
         settings.beditBezier = !settings.beditBezier;
+        ofLogVerbose() << "settings.beditBezier = " << settings.beditBezier << endl;
     }
     
     if(settings.beditBezier){

@@ -11,7 +11,7 @@
 #include "ofxBezierEvents.h"
 
 
-#define GEO_LINE
+//#define GEO_LINE
 
 
 
@@ -127,9 +127,11 @@ private:
     std::vector<draggableVertex>& controlPoint1;
     std::vector<draggableVertex>& controlPoint2;
     
+#ifdef GEO_LINE
     std::vector<draggableVertex>& curveVerticesGeo;
     std::vector<draggableVertex>& controlPoint1Geo;
     std::vector<draggableVertex>& controlPoint2Geo;
+#endif
     
     void triggerUpdate();
 

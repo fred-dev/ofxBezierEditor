@@ -32,9 +32,8 @@
 		},
 		"BB4B014C10F69532006C3DED": {
 			"children": [
-				"{DA0A5C53-390B-4DB0-8B4D-39877E7C86D7}",
-				"{6EA3213D-7587-4C37-BECF-A72AD9887108}",
-				"{C200A3F4-1FC8-4547-B619-559DD3E3CFD0}"
+				"{802861BB-B307-44B9-889C-43B751B4C611}",
+				"{5E6F3DC7-7AA7-42DC-A16F-0895B6907157}"
 			],
 			"isa": "PBXGroup",
 			"name": "addons",
@@ -118,7 +117,6 @@
 					"src",
 					"src",
 					"../../../addons/ofxBezierEditor/src",
-					"../../../addons/ofxBranchesPrimitive/src",
 					"../../../addons/ofxGui/src"
 				],
 				"OTHER_CPLUSPLUSFLAGS": "-D__MACOSX_CORE__"
@@ -138,7 +136,6 @@
 					"src",
 					"src",
 					"../../../addons/ofxBezierEditor/src",
-					"../../../addons/ofxBranchesPrimitive/src",
 					"../../../addons/ofxGui/src"
 				],
 				"OTHER_CPLUSPLUSFLAGS": "-D__MACOSX_CORE__"
@@ -151,19 +148,24 @@
 			"files": [
 				"E4B69E200A3A1BDC003C02F2",
 				"E4B69E210A3A1BDC003C02F2",
-				"{E16BA697-A305-4003-9232-01F6BE593406}",
-				"{DAA2B6C3-F83C-414D-92C7-DBC460129B75}",
-				"{C43BDBEF-1855-414B-A23F-17265435DA10}",
-				"{31BE1199-6DF0-4AD7-94AA-935330661DC0}",
-				"{DD130811-3AD3-462C-B981-94DA5823463F}",
-				"{C75E3909-0ED0-43C6-9527-0AED1E2550CC}",
-				"{2119B615-1A61-40E8-9C3D-115B70B8D1E5}",
-				"{0701EC85-B8D1-4CEE-A398-38D88828AB32}",
-				"{2DF1EFF3-1D44-44A3-A860-620185F2737B}",
-				"{456943BA-D70B-49E7-801C-F852F671A3D6}",
-				"{18A044BD-1661-417D-B05B-26407A93A921}",
-				"{4695377E-5D2E-49DB-B6C2-F49B78F4ABF4}",
-				"{4777AB5D-7731-49CE-88F2-2873EAA20486}"
+				"{8168F80A-58A7-414F-A665-71B48D8358FD}",
+				"{567DE7A1-A4EE-4E70-9A23-DB0A2AF511CA}",
+				"{CAD22771-A997-42A0-9C0F-63CADD9FC16F}",
+				"{479F749F-0513-4045-8E01-A351B25183CE}",
+				"{5612E5C0-C77D-4CC7-84C8-BD658D4519A1}",
+				"{046F1ACD-A87A-4519-B7D9-69592794AD85}",
+				"{66C818DD-37C4-4CB0-B60E-EB753386E9D2}",
+				"{B76F2184-21A0-4D88-AD23-9E60F6AB1F2D}",
+				"{30102AB3-FA1E-424C-B9C7-7D046053156A}",
+				"{3B3813F6-2E7E-41FE-95C9-6DAC410F80C0}",
+				"{962BA907-9F70-49FB-8F72-1E4E72ED4432}",
+				"{AA98CADA-6B57-45FA-9302-E0EFF3A9516F}",
+				"{2A4E6123-7486-4CE0-A1D8-E9D0F2778017}",
+				"{D2D41376-261C-4253-8C0F-446A24893BBC}",
+				"{207A4D15-5683-4391-91E2-F6EB58996F0F}",
+				"{C7B7043D-D0EE-470F-91C0-047ECB7D0F61}",
+				"{BAEB5C09-028D-4DCF-86A7-620DC6013484}",
+				"{177CA44D-2FC9-4E05-8C4F-453A368AA0FB}"
 			],
 			"isa": "PBXSourcesBuildPhase",
 			"runOnlyForDeploymentPostprocessing": "0"
@@ -220,7 +222,6 @@
 					"src",
 					"src",
 					"../../../addons/ofxBezierEditor/src",
-					"../../../addons/ofxBranchesPrimitive/src",
 					"../../../addons/ofxGui/src"
 				],
 				"LIBRARY_SEARCH_PATHS": "$(inherited)",
@@ -244,7 +245,6 @@
 					"src",
 					"src",
 					"../../../addons/ofxBezierEditor/src",
-					"../../../addons/ofxBranchesPrimitive/src",
 					"../../../addons/ofxGui/src"
 				],
 				"LIBRARY_SEARCH_PATHS": "$(inherited)",
@@ -322,11 +322,7 @@
 			"path": "Project.xcconfig",
 			"sourceTree": "<group>"
 		},
-		"{0701EC85-B8D1-4CEE-A398-38D88828AB32}": {
-			"fileRef": "{BFD86CC9-1975-4841-BB1D-BCEE5B9C8A52}",
-			"isa": "PBXBuildFile"
-		},
-		"{073B527F-0C9A-40EF-BD5E-58AE4FB515BD}": {
+		"{0338501D-72EC-489E-A2B8-ABFB4287A785}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -334,156 +330,19 @@
 			"path": "../../../addons/ofxGui/src/ofxLabel.h",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{13E357F4-DD5C-455F-9914-B399E41F532C}": {
-			"children": [
-				"{47EE9C84-B05F-429D-9547-37DD3F0AF49B}",
-				"{984C1EEA-D225-4D34-876C-DFDF96462C5B}"
-			],
-			"isa": "PBXGroup",
-			"name": "src",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{18A044BD-1661-417D-B05B-26407A93A921}": {
-			"fileRef": "{1F5243B5-330D-48FB-9656-80D52B4CA2E1}",
-			"isa": "PBXBuildFile"
-		},
-		"{1F5243B5-330D-48FB-9656-80D52B4CA2E1}": {
+		"{03BD120A-E36A-4388-A57E-DDA108FB3B56}": {
 			"explicitFileType": "sourcecode.cpp.cpp",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
-			"name": "ofxSlider.cpp",
-			"path": "../../../addons/ofxGui/src/ofxSlider.cpp",
+			"name": "ofxBezierUtility.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierUtility.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{2119B615-1A61-40E8-9C3D-115B70B8D1E5}": {
-			"fileRef": "{541D7772-5E53-408A-897E-DD2055806A91}",
+		"{046F1ACD-A87A-4519-B7D9-69592794AD85}": {
+			"fileRef": "{E99B56A7-2CDD-4D50-88FC-2688789FF2B5}",
 			"isa": "PBXBuildFile"
 		},
-		"{2209636A-B09A-432A-9409-280BC84FB9D0}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBaseGui.cpp",
-			"path": "../../../addons/ofxGui/src/ofxBaseGui.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{2C307596-A46A-4BB4-8D6A-76E07D70CFC2}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxGuiUtils.h",
-			"path": "../../../addons/ofxGui/src/ofxGuiUtils.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{2C9C6A75-1237-4587-8515-3009FA66FAA2}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxLabel.cpp",
-			"path": "../../../addons/ofxGui/src/ofxLabel.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{2DF1EFF3-1D44-44A3-A860-620185F2737B}": {
-			"fileRef": "{2C9C6A75-1237-4587-8515-3009FA66FAA2}",
-			"isa": "PBXBuildFile"
-		},
-		"{30E605EA-74DB-4E0E-BF34-6085E6FD6033}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBaseGui.h",
-			"path": "../../../addons/ofxGui/src/ofxBaseGui.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{31BE1199-6DF0-4AD7-94AA-935330661DC0}": {
-			"fileRef": "{2209636A-B09A-432A-9409-280BC84FB9D0}",
-			"isa": "PBXBuildFile"
-		},
-		"{3850E360-DB71-4AEF-BAE0-9C1A43DB76E3}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxGui.h",
-			"path": "../../../addons/ofxGui/src/ofxGui.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{398D19F3-043E-4BBA-871D-B320E54FB285}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxPanel.h",
-			"path": "../../../addons/ofxGui/src/ofxPanel.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{39FBE493-A365-4F78-ABFD-AF22BC88F59C}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxColorPicker.cpp",
-			"path": "../../../addons/ofxGui/src/ofxColorPicker.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{4396C7F1-F7B0-40FA-91A8-910097213070}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBranch.h",
-			"path": "../../../addons/ofxBranchesPrimitive/src/ofxBranch.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{456943BA-D70B-49E7-801C-F852F671A3D6}": {
-			"fileRef": "{AD7B7DBB-26A1-408F-9ABC-292F3A614F8B}",
-			"isa": "PBXBuildFile"
-		},
-		"{4695377E-5D2E-49DB-B6C2-F49B78F4ABF4}": {
-			"fileRef": "{63482585-76C8-4AF1-838F-7A33880DB617}",
-			"isa": "PBXBuildFile"
-		},
-		"{4777AB5D-7731-49CE-88F2-2873EAA20486}": {
-			"fileRef": "{ADB9020A-0AEC-40E6-B20D-64AB84333DD2}",
-			"isa": "PBXBuildFile"
-		},
-		"{47EE9C84-B05F-429D-9547-37DD3F0AF49B}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBezierEditor.cpp",
-			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditor.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{541D7772-5E53-408A-897E-DD2055806A91}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxGuiGroup.cpp",
-			"path": "../../../addons/ofxGui/src/ofxGuiGroup.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{55A9FFB1-4BE3-48DD-8370-BDC6E5A46336}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBranchesPrimitive.h",
-			"path": "../../../addons/ofxBranchesPrimitive/src/ofxBranchesPrimitive.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{63482585-76C8-4AF1-838F-7A33880DB617}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxSliderGroup.cpp",
-			"path": "../../../addons/ofxGui/src/ofxSliderGroup.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{6EA3213D-7587-4C37-BECF-A72AD9887108}": {
-			"children": [
-				"{D74D33BF-72D2-4D63-869A-4B6AF8921D52}"
-			],
-			"isa": "PBXGroup",
-			"name": "ofxBranchesPrimitive",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{7183CF1F-0245-4ED6-9C68-BBE78DA76519}": {
+		"{0A25556F-F207-45CE-BCA2-6B2564BCCB7F}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -491,76 +350,23 @@
 			"path": "../../../addons/ofxGui/src/ofxColorPicker.h",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{897E200B-3D1A-4BD9-916D-B477EFCB258F}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBranchCylinder.h",
-			"path": "../../../addons/ofxBranchesPrimitive/src/ofxBranchCylinder.h",
-			"sourceTree": "SOURCE_ROOT"
+		"{177CA44D-2FC9-4E05-8C4F-453A368AA0FB}": {
+			"fileRef": "{25480370-6E8F-4E2E-A106-0CB1D10AFAC4}",
+			"isa": "PBXBuildFile"
 		},
-		"{95A7FFF0-9FDA-441F-8AB9-672D666D0BA0}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxGuiGroup.h",
-			"path": "../../../addons/ofxGui/src/ofxGuiGroup.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{984C1EEA-D225-4D34-876C-DFDF96462C5B}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBezierEditor.h",
-			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditor.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{A770D24C-22F2-47CE-9AFF-3C21494FB87D}": {
-			"children": [
-				"{2209636A-B09A-432A-9409-280BC84FB9D0}",
-				"{30E605EA-74DB-4E0E-BF34-6085E6FD6033}",
-				"{AD0B0EC9-700E-4E19-9F19-DF5A500CC3F8}",
-				"{EE989406-9E36-4EE7-BD23-A14A2E28B32A}",
-				"{39FBE493-A365-4F78-ABFD-AF22BC88F59C}",
-				"{7183CF1F-0245-4ED6-9C68-BBE78DA76519}",
-				"{3850E360-DB71-4AEF-BAE0-9C1A43DB76E3}",
-				"{541D7772-5E53-408A-897E-DD2055806A91}",
-				"{95A7FFF0-9FDA-441F-8AB9-672D666D0BA0}",
-				"{2C307596-A46A-4BB4-8D6A-76E07D70CFC2}",
-				"{BFD86CC9-1975-4841-BB1D-BCEE5B9C8A52}",
-				"{C2A7363B-23D4-4DA4-8786-6E6776B031AB}",
-				"{2C9C6A75-1237-4587-8515-3009FA66FAA2}",
-				"{073B527F-0C9A-40EF-BD5E-58AE4FB515BD}",
-				"{AD7B7DBB-26A1-408F-9ABC-292F3A614F8B}",
-				"{398D19F3-043E-4BBA-871D-B320E54FB285}",
-				"{1F5243B5-330D-48FB-9656-80D52B4CA2E1}",
-				"{FE7CA3C4-5D57-4639-BE80-0617010967AF}",
-				"{63482585-76C8-4AF1-838F-7A33880DB617}",
-				"{F8B1BA5A-0421-4866-8ECC-69547909EB06}",
-				"{ADB9020A-0AEC-40E6-B20D-64AB84333DD2}",
-				"{D5A162BF-5275-47C4-91DC-D5E1F931FB55}"
-			],
-			"isa": "PBXGroup",
-			"name": "src",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{AD0B0EC9-700E-4E19-9F19-DF5A500CC3F8}": {
+		"{1870CFAF-5EE0-4D5F-A712-0ED511A9EEC1}": {
 			"explicitFileType": "sourcecode.cpp.cpp",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
-			"name": "ofxButton.cpp",
-			"path": "../../../addons/ofxGui/src/ofxButton.cpp",
+			"name": "ofxSliderGroup.cpp",
+			"path": "../../../addons/ofxGui/src/ofxSliderGroup.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{AD7B7DBB-26A1-408F-9ABC-292F3A614F8B}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxPanel.cpp",
-			"path": "../../../addons/ofxGui/src/ofxPanel.cpp",
-			"sourceTree": "SOURCE_ROOT"
+		"{207A4D15-5683-4391-91E2-F6EB58996F0F}": {
+			"fileRef": "{2F4CD81F-624B-409D-9DD6-007BB99AAEE8}",
+			"isa": "PBXBuildFile"
 		},
-		"{ADB9020A-0AEC-40E6-B20D-64AB84333DD2}": {
+		"{25480370-6E8F-4E2E-A106-0CB1D10AFAC4}": {
 			"explicitFileType": "sourcecode.cpp.cpp",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -568,7 +374,31 @@
 			"path": "../../../addons/ofxGui/src/ofxToggle.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{BFD86CC9-1975-4841-BB1D-BCEE5B9C8A52}": {
+		"{2A4E6123-7486-4CE0-A1D8-E9D0F2778017}": {
+			"fileRef": "{3B2B7EBD-3BE8-49B3-8B48-E2E099326DDB}",
+			"isa": "PBXBuildFile"
+		},
+		"{2F4CD81F-624B-409D-9DD6-007BB99AAEE8}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxPanel.cpp",
+			"path": "../../../addons/ofxGui/src/ofxPanel.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{2F961188-081C-400E-9CA1-E0B21180D2C6}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierRibbonMeshBuilder.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierRibbonMeshBuilder.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{30102AB3-FA1E-424C-B9C7-7D046053156A}": {
+			"fileRef": "{931FC6FC-40B6-4CAB-97A8-5C28E7A61D2D}",
+			"isa": "PBXBuildFile"
+		},
+		"{3B2B7EBD-3BE8-49B3-8B48-E2E099326DDB}": {
 			"explicitFileType": "sourcecode.cpp.cpp",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -576,79 +406,19 @@
 			"path": "../../../addons/ofxGui/src/ofxInputField.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{C200A3F4-1FC8-4547-B619-559DD3E3CFD0}": {
-			"children": [
-				"{A770D24C-22F2-47CE-9AFF-3C21494FB87D}"
-			],
-			"isa": "PBXGroup",
-			"name": "ofxGui",
-			"sourceTree": "SOURCE_ROOT"
+		"{3B3813F6-2E7E-41FE-95C9-6DAC410F80C0}": {
+			"fileRef": "{FFC77728-7C45-4003-BF1C-BF49CD084622}",
+			"isa": "PBXBuildFile"
 		},
-		"{C2A7363B-23D4-4DA4-8786-6E6776B031AB}": {
+		"{3BE6D65B-41BC-4D3B-9DD1-4C320AEE5D0F}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
-			"name": "ofxInputField.h",
-			"path": "../../../addons/ofxGui/src/ofxInputField.h",
+			"name": "ofxBezierDraw.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierDraw.h",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{C43BDBEF-1855-414B-A23F-17265435DA10}": {
-			"fileRef": "{E87993E8-9500-430B-AE16-B0AADC9D9668}",
-			"isa": "PBXBuildFile"
-		},
-		"{C75E3909-0ED0-43C6-9527-0AED1E2550CC}": {
-			"fileRef": "{39FBE493-A365-4F78-ABFD-AF22BC88F59C}",
-			"isa": "PBXBuildFile"
-		},
-		"{D5A162BF-5275-47C4-91DC-D5E1F931FB55}": {
-			"explicitFileType": "sourcecode.c.h",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxToggle.h",
-			"path": "../../../addons/ofxGui/src/ofxToggle.h",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{D74D33BF-72D2-4D63-869A-4B6AF8921D52}": {
-			"children": [
-				"{F9E4E051-D1B5-4649-82EB-45B4525B12F3}",
-				"{4396C7F1-F7B0-40FA-91A8-910097213070}",
-				"{897E200B-3D1A-4BD9-916D-B477EFCB258F}",
-				"{E87993E8-9500-430B-AE16-B0AADC9D9668}",
-				"{55A9FFB1-4BE3-48DD-8370-BDC6E5A46336}"
-			],
-			"isa": "PBXGroup",
-			"name": "src",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{DA0A5C53-390B-4DB0-8B4D-39877E7C86D7}": {
-			"children": [
-				"{13E357F4-DD5C-455F-9914-B399E41F532C}"
-			],
-			"isa": "PBXGroup",
-			"name": "ofxBezierEditor",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{DAA2B6C3-F83C-414D-92C7-DBC460129B75}": {
-			"fileRef": "{F9E4E051-D1B5-4649-82EB-45B4525B12F3}",
-			"isa": "PBXBuildFile"
-		},
-		"{DD130811-3AD3-462C-B981-94DA5823463F}": {
-			"fileRef": "{AD0B0EC9-700E-4E19-9F19-DF5A500CC3F8}",
-			"isa": "PBXBuildFile"
-		},
-		"{E16BA697-A305-4003-9232-01F6BE593406}": {
-			"fileRef": "{47EE9C84-B05F-429D-9547-37DD3F0AF49B}",
-			"isa": "PBXBuildFile"
-		},
-		"{E87993E8-9500-430B-AE16-B0AADC9D9668}": {
-			"explicitFileType": "sourcecode.cpp.cpp",
-			"fileEncoding": "4",
-			"isa": "PBXFileReference",
-			"name": "ofxBranchesPrimitive.cpp",
-			"path": "../../../addons/ofxBranchesPrimitive/src/ofxBranchesPrimitive.cpp",
-			"sourceTree": "SOURCE_ROOT"
-		},
-		"{EE989406-9E36-4EE7-BD23-A14A2E28B32A}": {
+		"{3CB33CDA-CC66-4721-95B7-80C6F1D38442}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -656,7 +426,23 @@
 			"path": "../../../addons/ofxGui/src/ofxButton.h",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{F8B1BA5A-0421-4866-8ECC-69547909EB06}": {
+		"{406B454D-3F58-45F5-BD62-734FCBF779FD}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxGui.h",
+			"path": "../../../addons/ofxGui/src/ofxGui.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{416B08D0-5907-4E3A-95EA-2568B80CAD68}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierRibbonMeshBuilder.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierRibbonMeshBuilder.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{43AC8EFE-1AAD-4DA8-A14F-B3187902C617}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
@@ -664,20 +450,329 @@
 			"path": "../../../addons/ofxGui/src/ofxSliderGroup.h",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{F9E4E051-D1B5-4649-82EB-45B4525B12F3}": {
+		"{479F749F-0513-4045-8E01-A351B25183CE}": {
+			"fileRef": "{9C9DF9EC-47F8-4AB1-87DF-30289AFF2F8C}",
+			"isa": "PBXBuildFile"
+		},
+		"{4E8C26CD-D738-4379-B0C6-46E1290FF8A7}": {
 			"explicitFileType": "sourcecode.cpp.cpp",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
-			"name": "ofxBranch.cpp",
-			"path": "../../../addons/ofxBranchesPrimitive/src/ofxBranch.cpp",
+			"name": "ofxSlider.cpp",
+			"path": "../../../addons/ofxGui/src/ofxSlider.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		},
-		"{FE7CA3C4-5D57-4639-BE80-0617010967AF}": {
+		"{4FD3548C-3F81-423E-AF80-BF645CF053EB}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBaseGui.h",
+			"path": "../../../addons/ofxGui/src/ofxBaseGui.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{54E23A08-B8CF-4342-B346-0F57BED3B7E4}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEditorSettings.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditorSettings.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{5612E5C0-C77D-4CC7-84C8-BD658D4519A1}": {
+			"fileRef": "{2F961188-081C-400E-9CA1-E0B21180D2C6}",
+			"isa": "PBXBuildFile"
+		},
+		"{567DE7A1-A4EE-4E70-9A23-DB0A2AF511CA}": {
+			"fileRef": "{C62651C3-B955-4C10-9F9F-5D9D545B2637}",
+			"isa": "PBXBuildFile"
+		},
+		"{5E6F3DC7-7AA7-42DC-A16F-0895B6907157}": {
+			"children": [
+				"{A60B4279-0A87-4544-BC8D-B2B49D4EBF21}"
+			],
+			"isa": "PBXGroup",
+			"name": "ofxGui",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{637FD756-7A15-44F6-B0C2-AD5EB96D4499}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEditor.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditor.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{66923BEF-AFCB-4376-9A1E-32398DC896CD}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierDraw.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierDraw.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{66C818DD-37C4-4CB0-B60E-EB753386E9D2}": {
+			"fileRef": "{B6CA577B-926F-4132-818D-8993B09D2D0C}",
+			"isa": "PBXBuildFile"
+		},
+		"{68B8316A-9339-437B-8F3F-AA3CCBFC06F8}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxLabel.cpp",
+			"path": "../../../addons/ofxGui/src/ofxLabel.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{691EF53D-345E-4778-8518-C7E771C388DF}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierUI.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierUI.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{7A8DA304-32BA-4A75-A0A7-A2384F1A4920}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxColorPicker.cpp",
+			"path": "../../../addons/ofxGui/src/ofxColorPicker.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{802861BB-B307-44B9-889C-43B751B4C611}": {
+			"children": [
+				"{A5E2ACA6-A640-4847-A455-B04325DC062B}"
+			],
+			"isa": "PBXGroup",
+			"name": "ofxBezierEditor",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{8168F80A-58A7-414F-A665-71B48D8358FD}": {
+			"fileRef": "{66923BEF-AFCB-4376-9A1E-32398DC896CD}",
+			"isa": "PBXBuildFile"
+		},
+		"{835D3867-8880-43B5-B090-4163AD187212}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxGuiUtils.h",
+			"path": "../../../addons/ofxGui/src/ofxGuiUtils.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{87DA6A65-9435-43FD-80B0-A8FA06DF0906}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierUtility.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierUtility.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{8C4D4CA5-C7BE-4092-AF2C-C237F799C7D1}": {
 			"explicitFileType": "sourcecode.c.h",
 			"fileEncoding": "4",
 			"isa": "PBXFileReference",
 			"name": "ofxSlider.h",
 			"path": "../../../addons/ofxGui/src/ofxSlider.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{931FC6FC-40B6-4CAB-97A8-5C28E7A61D2D}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBaseGui.cpp",
+			"path": "../../../addons/ofxGui/src/ofxBaseGui.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{962BA907-9F70-49FB-8F72-1E4E72ED4432}": {
+			"fileRef": "{7A8DA304-32BA-4A75-A0A7-A2384F1A4920}",
+			"isa": "PBXBuildFile"
+		},
+		"{96E9FE3D-DF65-421C-89A2-2154463D2B33}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierTubeMeshBuilder.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierTubeMeshBuilder.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{9C9DF9EC-47F8-4AB1-87DF-30289AFF2F8C}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEvents.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEvents.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{A14D866C-49C2-46E0-84BF-63D788C78D65}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "draggableVertex.h",
+			"path": "../../../addons/ofxBezierEditor/src/draggableVertex.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{A5E2ACA6-A640-4847-A455-B04325DC062B}": {
+			"children": [
+				"{A14D866C-49C2-46E0-84BF-63D788C78D65}",
+				"{66923BEF-AFCB-4376-9A1E-32398DC896CD}",
+				"{3BE6D65B-41BC-4D3B-9DD1-4C320AEE5D0F}",
+				"{C62651C3-B955-4C10-9F9F-5D9D545B2637}",
+				"{637FD756-7A15-44F6-B0C2-AD5EB96D4499}",
+				"{54E23A08-B8CF-4342-B346-0F57BED3B7E4}",
+				"{CCAC91D6-299A-4681-B4D1-FE53E9E184C7}",
+				"{9C9DF9EC-47F8-4AB1-87DF-30289AFF2F8C}",
+				"{C8BC5747-8FCB-441D-BDAC-9D66368A0A9F}",
+				"{2F961188-081C-400E-9CA1-E0B21180D2C6}",
+				"{416B08D0-5907-4E3A-95EA-2568B80CAD68}",
+				"{E99B56A7-2CDD-4D50-88FC-2688789FF2B5}",
+				"{96E9FE3D-DF65-421C-89A2-2154463D2B33}",
+				"{B6CA577B-926F-4132-818D-8993B09D2D0C}",
+				"{691EF53D-345E-4778-8518-C7E771C388DF}",
+				"{03BD120A-E36A-4388-A57E-DDA108FB3B56}",
+				"{87DA6A65-9435-43FD-80B0-A8FA06DF0906}"
+			],
+			"isa": "PBXGroup",
+			"name": "src",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{A60B4279-0A87-4544-BC8D-B2B49D4EBF21}": {
+			"children": [
+				"{931FC6FC-40B6-4CAB-97A8-5C28E7A61D2D}",
+				"{4FD3548C-3F81-423E-AF80-BF645CF053EB}",
+				"{FFC77728-7C45-4003-BF1C-BF49CD084622}",
+				"{3CB33CDA-CC66-4721-95B7-80C6F1D38442}",
+				"{7A8DA304-32BA-4A75-A0A7-A2384F1A4920}",
+				"{0A25556F-F207-45CE-BCA2-6B2564BCCB7F}",
+				"{406B454D-3F58-45F5-BD62-734FCBF779FD}",
+				"{CBC67724-405A-4759-A861-21090BE0DABB}",
+				"{FC287C3A-430A-41D4-8B7E-C8A647403B2B}",
+				"{835D3867-8880-43B5-B090-4163AD187212}",
+				"{3B2B7EBD-3BE8-49B3-8B48-E2E099326DDB}",
+				"{D342B204-86C1-4294-8FF6-E326E1963B08}",
+				"{68B8316A-9339-437B-8F3F-AA3CCBFC06F8}",
+				"{0338501D-72EC-489E-A2B8-ABFB4287A785}",
+				"{2F4CD81F-624B-409D-9DD6-007BB99AAEE8}",
+				"{D524018C-D1E8-46B9-970C-4EA0D361AE50}",
+				"{4E8C26CD-D738-4379-B0C6-46E1290FF8A7}",
+				"{8C4D4CA5-C7BE-4092-AF2C-C237F799C7D1}",
+				"{1870CFAF-5EE0-4D5F-A712-0ED511A9EEC1}",
+				"{43AC8EFE-1AAD-4DA8-A14F-B3187902C617}",
+				"{25480370-6E8F-4E2E-A106-0CB1D10AFAC4}",
+				"{F5C0BED2-F925-402F-ADC5-99B8A4B79427}"
+			],
+			"isa": "PBXGroup",
+			"name": "src",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{AA98CADA-6B57-45FA-9302-E0EFF3A9516F}": {
+			"fileRef": "{CBC67724-405A-4759-A861-21090BE0DABB}",
+			"isa": "PBXBuildFile"
+		},
+		"{B6CA577B-926F-4132-818D-8993B09D2D0C}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierUI.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierUI.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{B76F2184-21A0-4D88-AD23-9E60F6AB1F2D}": {
+			"fileRef": "{03BD120A-E36A-4388-A57E-DDA108FB3B56}",
+			"isa": "PBXBuildFile"
+		},
+		"{BAEB5C09-028D-4DCF-86A7-620DC6013484}": {
+			"fileRef": "{1870CFAF-5EE0-4D5F-A712-0ED511A9EEC1}",
+			"isa": "PBXBuildFile"
+		},
+		"{C62651C3-B955-4C10-9F9F-5D9D545B2637}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEditor.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditor.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{C7B7043D-D0EE-470F-91C0-047ECB7D0F61}": {
+			"fileRef": "{4E8C26CD-D738-4379-B0C6-46E1290FF8A7}",
+			"isa": "PBXBuildFile"
+		},
+		"{C8BC5747-8FCB-441D-BDAC-9D66368A0A9F}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEvents.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEvents.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{CAD22771-A997-42A0-9C0F-63CADD9FC16F}": {
+			"fileRef": "{54E23A08-B8CF-4342-B346-0F57BED3B7E4}",
+			"isa": "PBXBuildFile"
+		},
+		"{CBC67724-405A-4759-A861-21090BE0DABB}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxGuiGroup.cpp",
+			"path": "../../../addons/ofxGui/src/ofxGuiGroup.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{CCAC91D6-299A-4681-B4D1-FE53E9E184C7}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierEditorSettings.h",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierEditorSettings.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{D2D41376-261C-4253-8C0F-446A24893BBC}": {
+			"fileRef": "{68B8316A-9339-437B-8F3F-AA3CCBFC06F8}",
+			"isa": "PBXBuildFile"
+		},
+		"{D342B204-86C1-4294-8FF6-E326E1963B08}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxInputField.h",
+			"path": "../../../addons/ofxGui/src/ofxInputField.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{D524018C-D1E8-46B9-970C-4EA0D361AE50}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxPanel.h",
+			"path": "../../../addons/ofxGui/src/ofxPanel.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{E99B56A7-2CDD-4D50-88FC-2688789FF2B5}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxBezierTubeMeshBuilder.cpp",
+			"path": "../../../addons/ofxBezierEditor/src/ofxBezierTubeMeshBuilder.cpp",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{F5C0BED2-F925-402F-ADC5-99B8A4B79427}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxToggle.h",
+			"path": "../../../addons/ofxGui/src/ofxToggle.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{FC287C3A-430A-41D4-8B7E-C8A647403B2B}": {
+			"explicitFileType": "sourcecode.c.h",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxGuiGroup.h",
+			"path": "../../../addons/ofxGui/src/ofxGuiGroup.h",
+			"sourceTree": "SOURCE_ROOT"
+		},
+		"{FFC77728-7C45-4003-BF1C-BF49CD084622}": {
+			"explicitFileType": "sourcecode.cpp.cpp",
+			"fileEncoding": "4",
+			"isa": "PBXFileReference",
+			"name": "ofxButton.cpp",
+			"path": "../../../addons/ofxGui/src/ofxButton.cpp",
 			"sourceTree": "SOURCE_ROOT"
 		}
 	},

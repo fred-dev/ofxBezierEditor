@@ -5,7 +5,13 @@
 #endif
 
 ofxBezierEditor::ofxBezierEditor()
+#ifdef GEO_LINE
 :   settings(*curveVertices, *controlPoint1, *controlPoint2, *curveVerticesGeo, *controlPoint1Geo, *controlPoint2Geo),
+#else
+:   settings(*curveVertices, *controlPoint1, *controlPoint2),
+
+#endif
+    
     tubeMeshBuilder(settings),
     ribbonMeshBuilder(settings),
     bezierDraw(settings, *curveVertices, *controlPoint1, *controlPoint2),
@@ -111,7 +117,7 @@ void ofxBezierEditor::updateAllFromVertices(){
     calculateCenter();
     
     if(settings.bUseRibbonMesh){
-        ribbonMeshBuilder.generateTriangleStripFromPolyline(polyLineFromPoints);
+        ribbonMeshBuilder.generateRibbonMeshFromPolyline(polyLineFromPoints);
         
     }
     if(settings.bUseTubeMesh){
