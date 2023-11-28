@@ -43,44 +43,50 @@ void ofxBezierEditorSettings::loadPoints(string filename){
         jsonFile >> JSONBezier;
         // Read data from JSON
         bUseRibbonMesh = JSONBezier["bezier"]["useRibbonMesh"].get<bool>();
-        ofLogVerbose("ofxBezierEditor") << "bUseRibbonMesh: " << bUseRibbonMesh;
+        ofLogVerbose("ofxBezierEditor") << "bUseRibbonMesh: " << bUseRibbonMesh << endl;
         ribbonWidth = JSONBezier["bezier"]["ribbonWidth"].get<float>();
-        ofLogVerbose("ofxBezierEditor") << "ribbonWidth: " << ribbonWidth;
+        ofLogVerbose("ofxBezierEditor") << "ribbonWidth: " << ribbonWidth << endl;
         meshLengthPrecisionMultiplier = JSONBezier["bezier"]["meshLengthPrecision"].get<int>();
-        ofLogVerbose("ofxBezierEditor") << "meshLengthPrecisionMultiplier: " << meshLengthPrecisionMultiplier;
+        ofLogVerbose("ofxBezierEditor") << "meshLengthPrecisionMultiplier: " << meshLengthPrecisionMultiplier << endl;
         
         bUseTubeMesh = JSONBezier["bezier"]["useTubeMesh"].get<bool>();
-        ofLogVerbose("ofxBezierEditor") << "bUseTubeMesh: " << bUseTubeMesh;
+        ofLogVerbose("ofxBezierEditor") << "bUseTubeMesh: " << bUseTubeMesh << endl;
         tubeRadius = JSONBezier["bezier"]["tubeRadius"].get<float>();
-        ofLogVerbose("ofxBezierEditor") << "tubeRadius: " << tubeRadius;
+        ofLogVerbose("ofxBezierEditor") << "tubeRadius: " << tubeRadius << endl;
         tubeResolution = JSONBezier["bezier"]["tubeResolution"].get<int>();
-        ofLogVerbose("ofxBezierEditor") << "tubeResolution: " << tubeResolution;
+        ofLogVerbose("ofxBezierEditor") << "tubeResolution: " << tubeResolution << endl;
         
         
         bIsClosed = JSONBezier["bezier"]["closed"].get<bool>();
-        ofLogVerbose("ofxBezierEditor") << "bIsClosed: " << bIsClosed;
+        ofLogVerbose("ofxBezierEditor") << "bIsClosed: " << bIsClosed << endl;
         
         //polyLineFromPoints.setClosed(bIsClosed);
         
         
         bfillBezier = JSONBezier["bezier"]["fill"].get<bool>();
+        ofLogVerbose("ofxBezierEditor") << "bfillBezier: " << bfillBezier << endl;
+
         colorFill.set(
                       JSONBezier["bezier"]["colorFill"]["r"].get<int>(),
                       JSONBezier["bezier"]["colorFill"]["g"].get<int>(),
                       JSONBezier["bezier"]["colorFill"]["b"].get<int>(),
                       JSONBezier["bezier"]["colorFill"]["a"].get<int>()
                       );
-        
+        ofLogVerbose("ofxBezierEditor") << "colorFill: " << colorFill << endl;
+
         colorStroke.set(
                         JSONBezier["bezier"]["colorStroke"]["r"].get<int>(),
                         JSONBezier["bezier"]["colorStroke"]["g"].get<int>(),
                         JSONBezier["bezier"]["colorStroke"]["b"].get<int>(),
                         JSONBezier["bezier"]["colorStroke"]["a"].get<int>()
                         );
-        
+        ofLogVerbose("ofxBezierEditor") << "colorStroke: " << colorStroke << endl;
+
         
         curveVertices.clear();
         for (const auto& vertexJson : JSONBezier["bezier"]["vertices"]) {
+            ofLogVerbose("ofxBezierEditor") << "vertexJson: " << vertexJson << endl;
+
             draggableVertex vtx;
             vtx.pos.x = vertexJson["x"].get<float>();
             vtx.pos.y = vertexJson["y"].get<float>();
