@@ -11,7 +11,7 @@
 #include "ofxBezierEvents.h"
 
 
-//#define GEO_LINE
+#define GEO_LINE
 
 
 

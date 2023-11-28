@@ -8,6 +8,7 @@
 #include "ofxBezierEditorSettings.h"
 
 
+
 #ifdef GEO_LINE
 ofxBezierEditorSettings::ofxBezierEditorSettings(std::vector<draggableVertex>& curveVertices,
                                                  std::vector<draggableVertex>& controlPoint1,

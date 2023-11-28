@@ -20,9 +20,6 @@ ofxBezierEditor::ofxBezierEditor()
     settings.setRadiusVertex(8);
     settings.setRadiusControlPoints(6);
     
-//    currentPointToMove = 0;
-//    lastVertexSelected = 0;
-    
     draggableVertex vtx;
     curveVertices->assign(0, vtx);
     controlPoint1->assign(0, vtx);
@@ -96,7 +93,7 @@ void ofxBezierEditor::updateAllFromGeo(){
      calculateCenter();
      
     if(settings.bUseRibbonMesh){
-        ribbonMeshBuilder.generateTriangleStripFromPolyline(polyLineFromPoints);
+        ribbonMeshBuilder.generateRibbonMeshFromPolyline(polyLineFromPoints);
         
     }
     if(settings.bUseTubeMesh){
