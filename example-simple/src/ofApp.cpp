@@ -31,7 +31,7 @@ void ofApp::draw(){
         }
         
         else if(mode == FAT_LINE_MODE){
-            ofSetColor(myBezier.getColorStroke());
+			ofSetColor(myBezier.getColourStroke());
             myBezier.getRibbonMesh().draw();
         }
         
